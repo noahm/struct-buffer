@@ -11,6 +11,21 @@ import {
 export type Type_t = StructType<any, any> | StructBuffer;
 export type StructBuffer_t = { [k: string]: Type_t };
 
+export type DecodedStructSrc<StructSrc extends StructBuffer_t> = {
+  [k in keyof StructSrc]: StructSrc[k] extends StructBuffer<infer NestedSource>
+    ? DecodedStructSrc<NestedSource>
+    : StructSrc[k] extends StructType<infer D, unknown>
+    ? D
+    : never;
+};
+export type EncodedStructSrc<StructSrc extends StructBuffer_t> = {
+  [k in keyof StructSrc]: StructSrc[k] extends StructBuffer<infer NestedSource>
+    ? DecodedStructSrc<NestedSource>
+    : StructSrc[k] extends StructType<unknown, infer E>
+    ? E
+    : never;
+};
+
 /**
  * Get the size after byte alignment
  */
@@ -23,7 +38,7 @@ export function sizeof(type: Type_t): number {
     return (size + padidng - 1) * type.count;
   }
   if (type instanceof Inject) return type.size;
-  
+
   return type.isList ? type.size * type.count : type.size;
 }
 
@@ -34,7 +49,7 @@ function byteLength(sb: StructBuffer, count?: number) {
       else acc += sizeof(type);
       return acc;
     },
-    0
+    0,
   );
   return typeByteLength * (count ?? sb.count);
 }
@@ -64,19 +79,18 @@ const KStructBufferConfig = {
 };
 
 export class StructBuffer<
-  D = {
-    [k in keyof StructBuffer_t]: any;
-  },
-  E = Partial<D>
-> extends Array<StructBuffer<D[], E[]>> {
+  StructSrc extends StructBuffer_t = StructBuffer_t,
+  D = DecodedStructSrc<StructSrc>,
+  E = Partial<D>,
+> extends Array<StructBuffer<StructSrc, D[], E[]>> {
   deeps: number[] = [];
   config: StructBufferConfig = Object.assign({}, KStructBufferConfig);
   structKV: [string, Type_t][];
 
   constructor(
     public structName: string,
-    public struct: StructBuffer_t,
-    config?: StructBufferConfig
+    public struct: StructSrc,
+    config?: StructBufferConfig,
   ) {
     super();
     Object.assign(this.config, config);
@@ -112,15 +126,15 @@ export class StructBuffer<
   get maxSize(): number {
     return Math.max(
       ...Object.values(this.struct).map((type) =>
-        type instanceof StructBuffer ? type.maxSize : type.size
-      )
+        type instanceof StructBuffer ? type.maxSize : type.size,
+      ),
     );
   }
 
   decode(
     view: DecodeBuffer_t,
     littleEndian: boolean = false,
-    offset: number = 0
+    offset: number = 0,
   ): D {
     littleEndian = this.config.littleEndian ?? littleEndian;
     view = makeDataView(view);
@@ -132,7 +146,7 @@ export class StructBuffer<
           acc[key] = type.decode(
             view,
             type.config.littleEndian ?? littleEndian,
-            offset
+            offset,
           );
           offset += type.byteLength;
         } else {
@@ -140,7 +154,7 @@ export class StructBuffer<
             view,
             littleEndian,
             offset,
-            this.config.textDecode
+            this.config.textDecode,
           );
           offset += sizeof(type);
         }
@@ -156,7 +170,7 @@ export class StructBuffer<
     obj: E,
     littleEndian: boolean = false,
     offset: number = 0,
-    view?: DataView
+    view?: DataView,
   ): DataView {
     littleEndian = this.config.littleEndian ?? littleEndian;
     let v = createDataView(this.byteLength, view);
@@ -177,7 +191,7 @@ export class StructBuffer<
             value,
             type.config.littleEndian ?? littleEndian,
             offset,
-            view
+            view,
           );
           offset += type.byteLength;
         } else {
@@ -186,7 +200,7 @@ export class StructBuffer<
             littleEndian,
             offset,
             view,
-            this.config.textEncoder
+            this.config.textEncoder,
           );
           offset += sizeof(type);
         }
