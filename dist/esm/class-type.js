@@ -44,6 +44,18 @@ class StructTypeNext {
     }
 }
 export class StructType extends Array {
+    get isList() {
+        return !!this.deeps.length;
+    }
+    get count() {
+        return this.deeps.reduce((acc, it) => (acc *= it), 1);
+    }
+    is(type) {
+        return type.names.some((name) => this.names.includes(name));
+    }
+    isName(typeName) {
+        return this.names.includes(typeName);
+    }
     constructor(typeName, size, unsigned) {
         super();
         this.size = size;
@@ -59,18 +71,6 @@ export class StructType extends Array {
             this.set = this.get = "";
         }
         return arrayProxyNext(this, StructTypeNext);
-    }
-    get isList() {
-        return !!this.deeps.length;
-    }
-    get count() {
-        return this.deeps.reduce((acc, it) => (acc *= it), 1);
-    }
-    is(type) {
-        return type.names.some((name) => this.names.includes(name));
-    }
-    isName(typeName) {
-        return this.names.includes(typeName);
     }
     decode(view, littleEndian = false, offset = 0) {
         view = makeDataView(view);

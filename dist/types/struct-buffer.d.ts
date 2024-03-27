@@ -1,24 +1,24 @@
 import { StructType } from "./class-type";
 import { DecodeBuffer_t } from "./interfaces";
-export declare type Type_t = StructType<any, any> | StructBuffer;
-export declare type StructBuffer_t = {
+export type Type_t = StructType<any, any> | StructBuffer;
+export type StructBuffer_t = {
     [k: string]: Type_t;
 };
 export declare function sizeof(type: Type_t): number;
-declare type StructBufferConfig = {
+type StructBufferConfig = {
     textDecode?: TextDecoder;
     textEncoder?: TextEncoder;
     littleEndian?: boolean;
 };
-export declare class StructBuffer<D = {
-    [k in keyof StructBuffer_t]: any;
-}, E = Partial<D>> extends Array<StructBuffer<D[], E[]>> {
+export declare class StructBuffer<StructSrc extends StructBuffer_t = StructBuffer_t, D = {
+    [k in keyof StructSrc]: any;
+}, E = Partial<D>> extends Array<StructBuffer<StructSrc, D[], E[]>> {
     structName: string;
-    struct: StructBuffer_t;
+    struct: StructSrc;
     deeps: number[];
     config: StructBufferConfig;
     structKV: [string, Type_t][];
-    constructor(structName: string, struct: StructBuffer_t, config?: StructBufferConfig);
+    constructor(structName: string, struct: StructSrc, config?: StructBufferConfig);
     get isList(): boolean;
     get count(): number;
     get byteLength(): number;
