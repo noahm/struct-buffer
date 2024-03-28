@@ -19,21 +19,21 @@ export declare class StructType<D, E> extends Array<StructType<D[], E[]>> {
 type BitsType_t = {
     [k: string]: number;
 };
-export declare class BitsType<D = {
-    [key in keyof BitsType_t]: Bit_t;
-}, E = Partial<D>> extends StructType<D, E> {
-    readonly bits: BitsType_t;
-    constructor(size: TypeSize_t, bits: BitsType_t);
-    decode(view: DecodeBuffer_t, littleEndian?: boolean, offset?: number): D;
-    encode(obj: E, littleEndian?: boolean, offset?: number, view?: DataView): DataView;
+export declare class BitsType<Template extends BitsType_t, Decoded = {
+    [key in keyof Template]: Bit_t;
+}> extends StructType<Decoded, Partial<Decoded>> {
+    readonly bits: Template;
+    constructor(size: TypeSize_t, bits: Template);
+    decode(view: DecodeBuffer_t, littleEndian?: boolean, offset?: number): Decoded;
+    encode(obj: Partial<Decoded>, littleEndian?: boolean, offset?: number, view?: DataView): DataView;
 }
-export declare class BitFieldsType<D = {
-    [key in keyof BitsType_t]: number;
-}, E = Partial<D>> extends StructType<D, E> {
-    readonly bitFields: BitsType_t;
-    constructor(size: TypeSize_t, bitFields: BitsType_t);
-    decode(view: DecodeBuffer_t, littleEndian?: boolean, offset?: number): D;
-    encode(obj: E, littleEndian?: boolean, offset?: number, view?: DataView): DataView;
+export declare class BitFieldsType<Template extends BitsType_t, Decoded = {
+    [key in keyof Template]: number;
+}> extends StructType<Decoded, Partial<Decoded>> {
+    readonly bitFields: Template;
+    constructor(size: TypeSize_t, bitFields: Template);
+    decode(view: DecodeBuffer_t, littleEndian?: boolean, offset?: number): Decoded;
+    encode(obj: Partial<Decoded>, littleEndian?: boolean, offset?: number, view?: DataView): DataView;
 }
 export declare class BoolType<D extends boolean, E extends boolean | number> extends StructType<D, E> {
     constructor(typeName: string | string[], type: StructType<number, number>);
@@ -63,15 +63,7 @@ export declare class Inject extends StructType<any, any> {
 }
 export declare function registerType<D extends number, E extends number>(typeName: string | string[], size: TypeSize_t, unsigned?: boolean): StructType<D, E>;
 export declare function typedef<D extends number, E extends number>(typeName: string | string[], type: StructType<any, any>): StructType<D, E>;
-export declare function bits(type: StructType<number, number>, obj: BitsType_t): BitsType<{
-    [x: string]: Bit_t;
-}, Partial<{
-    [x: string]: Bit_t;
-}>>;
-export declare function bitFields(type: StructType<number, number>, obj: BitsType_t): BitFieldsType<{
-    [x: string]: number;
-}, Partial<{
-    [x: string]: number;
-}>>;
+export declare function bits<Template extends BitsType_t>(type: StructType<number, number>, obj: Template): BitsType<Template, { [key in keyof Template]: Bit_t; }>;
+export declare function bitFields<Template extends BitsType_t>(type: StructType<number, number>, obj: Template): BitFieldsType<Template, { [key in keyof Template]: number; }>;
 export {};
 //# sourceMappingURL=class-type.d.ts.map

@@ -99,7 +99,7 @@ export class StructType<D, E> extends Array<StructType<D[], E[]>> {
   constructor(
     typeName: string | string[],
     public size: TypeSize_t,
-    public readonly unsigned: boolean
+    public readonly unsigned: boolean,
   ) {
     super();
     this.names = Array.isArray(typeName) ? typeName : [typeName];
@@ -129,7 +129,7 @@ export class StructType<D, E> extends Array<StructType<D[], E[]>> {
   decode(
     view: DecodeBuffer_t,
     littleEndian: boolean = false,
-    offset: number = 0
+    offset: number = 0,
   ): D {
     view = makeDataView(view);
 
@@ -162,7 +162,7 @@ export class StructType<D, E> extends Array<StructType<D[], E[]>> {
     obj: E,
     littleEndian: boolean = false,
     offset: number = 0,
-    view?: DataView
+    view?: DataView,
   ): DataView {
     const v = createDataView(this.count * this.size, view);
 
@@ -184,24 +184,24 @@ export class StructType<D, E> extends Array<StructType<D[], E[]>> {
 
 type BitsType_t = { [k: string]: number };
 export class BitsType<
-  D = {
-    [key in keyof BitsType_t]: Bit_t;
+  Template extends BitsType_t,
+  Decoded = {
+    [key in keyof Template]: Bit_t;
   },
-  E = Partial<D>
-> extends StructType<D, E> {
-  constructor(size: TypeSize_t, public readonly bits: BitsType_t) {
+> extends StructType<Decoded, Partial<Decoded>> {
+  constructor(size: TypeSize_t, public readonly bits: Template) {
     super("<bits>", size, true);
   }
 
   override decode(
     view: DecodeBuffer_t,
     littleEndian: boolean = false,
-    offset: number = 0
-  ): D {
+    offset: number = 0,
+  ): Decoded {
     const data: number[] | number = super.decode(
       view,
       littleEndian,
-      offset
+      offset,
     ) as any;
     if (this.isList && Array.isArray(data)) {
       return data.map((it) => {
@@ -221,10 +221,10 @@ export class BitsType<
   }
 
   override encode(
-    obj: E,
+    obj: Partial<Decoded>,
     littleEndian: boolean = false,
     offset: number = 0,
-    view?: DataView
+    view?: DataView,
   ): DataView {
     const v = createDataView(this.count * this.size, view);
 
@@ -287,24 +287,24 @@ export class BitsType<
  * ```
  */
 export class BitFieldsType<
-  D = {
-    [key in keyof BitsType_t]: number;
+  Template extends BitsType_t,
+  Decoded = {
+    [key in keyof Template]: number;
   },
-  E = Partial<D>
-> extends StructType<D, E> {
-  constructor(size: TypeSize_t, public readonly bitFields: BitsType_t) {
+> extends StructType<Decoded, Partial<Decoded>> {
+  constructor(size: TypeSize_t, public readonly bitFields: Template) {
     super("<bit-fields>", size, true);
   }
 
   override decode(
     view: DecodeBuffer_t,
     littleEndian: boolean = false,
-    offset: number = 0
-  ): D {
+    offset: number = 0,
+  ): Decoded {
     const data: number[] | number = super.decode(
       view,
       littleEndian,
-      offset
+      offset,
     ) as any;
 
     let i = 0;
@@ -336,10 +336,10 @@ export class BitFieldsType<
   }
 
   override encode(
-    obj: E,
+    obj: Partial<Decoded>,
     littleEndian: boolean = false,
     offset: number = 0,
-    view?: DataView
+    view?: DataView,
   ): DataView {
     const v = createDataView(this.count * this.size, view);
 
@@ -372,7 +372,7 @@ export class BitFieldsType<
 
 export class BoolType<
   D extends boolean,
-  E extends boolean | number
+  E extends boolean | number,
 > extends StructType<D, E> {
   constructor(typeName: string | string[], type: StructType<number, number>) {
     super(typeName, type.size, type.unsigned);
@@ -393,7 +393,7 @@ export class BoolType<
   override decode(
     view: DecodeBuffer_t,
     littleEndian: boolean = false,
-    offset: number = 0
+    offset: number = 0,
   ): D {
     let r = super.decode(view, littleEndian, offset) as any;
     if (Array.isArray(r)) {
@@ -422,7 +422,7 @@ export class BoolType<
     obj: E,
     littleEndian: boolean = false,
     offset: number = 0,
-    view?: DataView
+    view?: DataView,
   ): DataView {
     if (obj && Array.isArray(obj)) {
       obj = obj.flat().map((it) => Number(Boolean(it))) as any;
@@ -451,7 +451,7 @@ export class StringType extends StructType<string, string> {
     view: DecodeBuffer_t,
     littleEndian: boolean = false,
     offset: number = 0,
-    textDecode?: TextDecoder
+    textDecode?: TextDecoder,
   ) {
     view = makeDataView(view);
     textDecode ??= this.textDecode;
@@ -484,7 +484,7 @@ export class StringType extends StructType<string, string> {
     littleEndian: boolean = false,
     offset: number = 0,
     view?: DataView,
-    textEncoder?: TextEncoder
+    textEncoder?: TextEncoder,
   ): DataView {
     const v = createDataView(this.count * this.size, view);
 
@@ -525,7 +525,7 @@ export class PaddingType extends StructType<number, number> {
   override decode(
     view: DecodeBuffer_t,
     littleEndian: boolean = false,
-    offset: number = 0
+    offset: number = 0,
   ) {
     view = makeDataView(view);
     let i = sizeof(this);
@@ -553,7 +553,7 @@ export class PaddingType extends StructType<number, number> {
     zero: number = 0,
     littleEndian: boolean = false,
     offset: number = 0,
-    view?: DataView
+    view?: DataView,
   ): DataView {
     const v = createDataView(this.count * this.size, view);
     if (typeof zero !== "number") zero = 0;
@@ -572,7 +572,7 @@ export class Inject extends StructType<any, any> {
    */
   constructor(
     private hInjectDecode?: HInjectDecode,
-    private hInjectEncode?: HInjectEncode
+    private hInjectEncode?: HInjectEncode,
   ) {
     super("inject_t", 0, true);
   }
@@ -580,7 +580,7 @@ export class Inject extends StructType<any, any> {
   override decode(
     view: DecodeBuffer_t,
     littleEndian: boolean = false,
-    offset: number = 0
+    offset: number = 0,
   ) {
     if (!this.hInjectDecode) return null;
 
@@ -604,7 +604,7 @@ export class Inject extends StructType<any, any> {
     obj: any,
     littleEndian: boolean = false,
     offset: number = 0,
-    view?: DataView
+    view?: DataView,
   ): DataView {
     view = createDataView(0, view);
     if (!this.hInjectEncode) return view;
@@ -637,7 +637,7 @@ export class Inject extends StructType<any, any> {
 export function registerType<D extends number, E extends number>(
   typeName: string | string[],
   size: TypeSize_t,
-  unsigned = true
+  unsigned = true,
 ) {
   return new StructType<D, E>(typeName, size, unsigned);
 }
@@ -654,16 +654,22 @@ export function registerType<D extends number, E extends number>(
  */
 export function typedef<D extends number, E extends number>(
   typeName: string | string[],
-  type: StructType<any, any>
+  type: StructType<any, any>,
 ) {
   const newType = registerType<D, E>(typeName, type.size, type.unsigned);
   return newType;
 }
 
-export function bits(type: StructType<number, number>, obj: BitsType_t) {
+export function bits<Template extends BitsType_t>(
+  type: StructType<number, number>,
+  obj: Template,
+) {
   return new BitsType(type.size, obj);
 }
 
-export function bitFields(type: StructType<number, number>, obj: BitsType_t) {
+export function bitFields<Template extends BitsType_t>(
+  type: StructType<number, number>,
+  obj: Template,
+) {
   return new BitFieldsType(type.size, obj);
 }
