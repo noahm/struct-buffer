@@ -8,6 +8,7 @@
   "scripts": {
     "build:umd": "webpack -c webpack.config.js",
     "build:esm": "tsc --project tsconfig.esm.json",
+    "build:types": "tsc --project tsconfig.types.json",
     "build": "npm run build:umd && npm run build:esm",
     "test": "jest"
   },

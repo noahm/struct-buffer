@@ -35,7 +35,7 @@ const exp =
  */
 export function parse(
   cStructTemp: string,
-  types?: { [typeName: string]: Type_t }
+  types?: { [typeName: string]: Type_t },
 ): {
   [structName: string]: StructBuffer;
 } {
@@ -107,7 +107,7 @@ export function parse(
       Object.assign(acc, {
         [structName]: null, // 先创建指针
       }),
-    {}
+    {},
   );
 
   for (const [structName, props] of Object.entries(cStructs)) {
@@ -136,13 +136,14 @@ export function parse(
 
         if (!type) {
           throw new Error(
-            `[parseCStruct]: The (${p.type}) type was not found in styles`
+            `[parseCStruct]: The (${p.type}) type was not found in styles`,
           );
         }
 
+        // @ts-expect-error i made the types too strict?
         acc[propName] = p.isList ? type[p.count] : type;
         return acc;
-      }, {})
+      }, {}),
     );
   }
 
