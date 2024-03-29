@@ -1,0 +1,10 @@
+.github
+.vscode
+.pnp*
+.yarn*
+test
+jest.config.js
+tsconfig.*
+*.tgz
+webpack.config.js
+yarn.lock
