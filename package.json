@@ -21,12 +21,15 @@
     "buffer",
     "Struct"
   ],
-  "author": "Ajanuw",
+  "author": "Noah Manneschmidt",
+  "contributors": [
+    "Ajanuw"
+  ],
   "license": "MIT",
-  "homepage": "https://github.com/januwA/struct-buffer",
+  "homepage": "https://github.com/noahm/struct-buffer",
   "repository": {
     "type": "git",
-    "url": "https://github.com/januwA/struct-buffer.git"
+    "url": "https://github.com/noahm/struct-buffer.git"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",

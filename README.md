@@ -1,5 +1,7 @@
 ## @nmann/struct-buffer
 
+[![npm](https://img.shields.io/npm/v/@nmann/struct-buffer)](https://www.npmjs.com/package/@nmann/struct-buffer)
+
 A fork of the [struct-buffer](https://www.npmjs.com/package/struct-buffer) package, initially created to improve the typescript integration.
 
 Add structure to ArrayBuffer
@@ -7,13 +9,13 @@ Add structure to ArrayBuffer
 ## Install
 
 ```
-$ npm i struct-buffer
+$ npm i @nmann/struct-buffer
 ```
 
 ## how to use
 
 ```ts
-import { float, string_t, StructBuffer, pack } from "struct-buffer";
+import { float, string_t, StructBuffer, pack } from "@nmann/struct-buffer";
 
 const struct = new StructBuffer("Player", {
   hp: float,
@@ -45,10 +47,10 @@ const view = struct.encode({
 </script>
 ```
 
-## Use ["type"](https://github.com/januwA/struct-buffer/blob/main/src/types.ts) for conversion
+## Use ["type"](https://github.com/noahm/struct-buffer/blob/main/src/types.ts) for conversion
 
 ```ts
-import { DWORD } from "struct-buffer";
+import { DWORD } from "@nmann/struct-buffer";
 
 // encode
 const view = DWORD[2].encode([1, 2]);
@@ -167,7 +169,7 @@ XINPUT_STATE.encode({
 ## parse c-struct
 
 ```ts
-import { CStruct } from "struct-buffer";
+import { CStruct } from "@nmann/struct-buffer";
 
 const cStruct = `
 //
@@ -240,7 +242,7 @@ const users = User[2].decode(
 ## StructBuffer to c-struct
 
 ```ts
-import { CStruct } from "struct-buffer";
+import { CStruct } from "@nmann/struct-buffer";
 
 const XINPUT_GAMEPAD = new StructBuffer("XINPUT_GAMEPAD", {
   wButtons: WORD,
@@ -276,7 +278,7 @@ string_t[4].decode(new Uint8Array([0x61, 0x62, 0x00, 0x64]); // ab
 ## bits
 
 ```ts
-import { DWORD, bits, StructBuffer } from "struct-buffer";
+import { DWORD, bits, StructBuffer } from "@nmann/struct-buffer";
 
 const EFLAG_DATA = 0x00000246;
 const littleEndian = true;
@@ -311,7 +313,12 @@ const view = EFLAG.encode(
 ## bitFields
 
 ```ts
-import { uint8_t, bitFields, StructBuffer, sbytes as b } from "struct-buffer";
+import {
+  uint8_t,
+  bitFields,
+  StructBuffer,
+  sbytes as b,
+} from "@nmann/struct-buffer";
 
 const bf = bitFields(uint8_t, {
   a: 1,
@@ -375,7 +382,7 @@ import {
   calcsize,
   Struct,
   sbytes as b,
-} from "struct-buffer";
+} from "@nmann/struct-buffer";
 
 pack("b2xb", 2, 1);
 // => <02 00 00 01>
@@ -404,7 +411,7 @@ import {
   sbytes2 as b2,
   sview,
   TEXT,
-} from "struct-buffer";
+} from "@nmann/struct-buffer";
 
 createDataView(3);
 // => <00 00 00>
@@ -432,8 +439,8 @@ TEXT(pack("3s2b3s2I", "abc", 1, 2, "xyz", 8, 9));
 
 ## See also:
 
-- [See the test for more examples](https://github.com/januwA/struct-buffer/blob/main/test/test.test.ts)
-- [DataView](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/DataView)
+- [See the test for more examples](https://github.com/noahm/struct-buffer/blob/main/test/test.test.ts)
+- [DataView](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView)
 - [C_data_types](https://en.wikipedia.org/wiki/C_data_types)
 - [Built-in types (C++)](https://docs.microsoft.com/en-us/cpp/cpp/fundamental-types-cpp?view=msvc-160)
 - [C++ Bit Fields](https://docs.microsoft.com/en-us/cpp/cpp/cpp-bit-fields?view=msvc-160)
