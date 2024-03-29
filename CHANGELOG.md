@@ -1,10 +1,19 @@
+# Changelog
+
+## 5.3.0 2024-03-28
+
+- ✨ Updated types of `StructBuffer` class and `bits` and `bitFields` functions to have fully typed returns from the `.decode()` method
+
+# Versions prior to fork
+
+Versions 5.2.0 and prior are releases of the original [struct-buffer](https://www.npmjs.com/package/struct-buffer) package
+
 ## 5.2.0 2022-9-28
 
 - 📦 update packages
 - ✨ add `Inject` type
 - ✅✔️ add `Inject` test
 - realloc
-
 
 ## 5.1.3 2021-10-27
 
@@ -21,7 +30,7 @@
 ## 5.1.0 2021-9-3
 
 - ✨add [bit-fields](https://docs.microsoft.com/en-us/cpp/cpp/cpp-bit-fields?view=msvc-160) type
-- ✅✔️  add bit-fields test
+- ✅✔️ add bit-fields test
 
 ## 5.0.0 2021-8-7
 
@@ -110,7 +119,6 @@
 
 - Support custom type (e.g. short = registerType("short", 2, false))
 - struct nesting
-
 
 ## 1.0.0 2020-12-24
 
