@@ -68,7 +68,7 @@ class StructTypeNext {
 
 // D decode return type
 // E encode obj type
-export class StructType<D, E> extends Array<
+export class StructType<D, E = Partial<D>> extends Array<
   StructType<SequenceOf<D>, SequenceOf<E>>
 > {
   names: string[];

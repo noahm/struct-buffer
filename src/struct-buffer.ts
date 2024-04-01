@@ -18,13 +18,6 @@ export type DecodedStructSrc<StructSrc extends StructBuffer_t> = {
     ? D
     : never;
 };
-export type EncodedStructSrc<StructSrc extends StructBuffer_t> = {
-  [k in keyof StructSrc]: StructSrc[k] extends StructBuffer<infer NestedSource>
-    ? DecodedStructSrc<NestedSource>
-    : StructSrc[k] extends StructType<unknown, infer E>
-    ? E
-    : never;
-};
 
 /**
  * Get the size after byte alignment
@@ -42,7 +35,10 @@ export function sizeof(type: Type_t): number {
   return type.isList ? type.size * type.count : type.size;
 }
 
-function byteLength(sb: StructBuffer, count?: number) {
+function byteLength(
+  sb: StructBuffer<StructBuffer_t, unknown, unknown>,
+  count?: number,
+) {
   const typeByteLength: number = Object.values(sb.struct).reduce(
     (acc: number, type) => {
       if (type instanceof StructBuffer) acc += type.byteLength;
@@ -81,7 +77,7 @@ const KStructBufferConfig = {
 export class StructBuffer<
   StructSrc extends StructBuffer_t = StructBuffer_t,
   D = DecodedStructSrc<StructSrc>,
-  E = Partial<D>,
+  E = D,
 > extends Array<StructBuffer<StructSrc, D[], E[]>> {
   deeps: number[] = [];
   config: StructBufferConfig = Object.assign({}, KStructBufferConfig);
@@ -120,7 +116,7 @@ export class StructBuffer<
   }
 
   get byteLength(): number {
-    return byteLength(this as any);
+    return byteLength(this);
   }
 
   get maxSize(): number {
