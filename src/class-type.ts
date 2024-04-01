@@ -190,7 +190,7 @@ type BitsType_t = { [k: string]: number };
 export class BitsType<
   Template extends BitsType_t,
   Decoded = {
-    [key in keyof Template]: Bit_t;
+    [key in keyof Template]: boolean;
   },
 > extends StructType<Decoded, Partial<Decoded>> {
   constructor(size: TypeSize_t, public readonly bits: Template) {
@@ -209,18 +209,18 @@ export class BitsType<
     ) as any;
     if (this.isList && Array.isArray(data)) {
       return data.map((it) => {
-        const result: { [k: string]: Bit_t } = {};
+        const result: { [k: string]: boolean } = {};
         Object.entries(this.bits).forEach(([k, i]) => {
-          result[k] = ((it & (1 << i)) >> i) as Bit_t;
+          result[k] = !!((it & (1 << i)) >> i);
         });
         return result;
-      }) as any;
+      }) as Decoded;
     } else {
-      const result: { [k: string]: Bit_t } = {};
+      const result: { [k: string]: boolean } = {};
       Object.entries(this.bits).forEach(([k, i]) => {
-        result[k] = (((data as number) & (1 << i)) >> i) as Bit_t;
+        result[k] = !!(((data as number) & (1 << i)) >> i);
       });
-      return result as any;
+      return result as Decoded;
     }
   }
 

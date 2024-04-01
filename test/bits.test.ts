@@ -18,15 +18,15 @@ describe("bits test", () => {
       OF: 11,
     });
     const data = EFLAG.decode(new Uint32Array([eflag_data]), littleEndian);
-    expect([data.ZF, data.PF, data.IF]).toEqual([1, 1, 1]);
+    expect([data.ZF, data.PF, data.IF]).toEqual([true, true, true]);
 
     const view = EFLAG.encode(
       {
-        PF: 1,
-        ZF: 1,
-        IF: 1,
+        PF: true,
+        ZF: true,
+        IF: true,
       },
-      littleEndian
+      littleEndian,
     );
     expect(view.getUint8(0)).toBe(0x44);
   });
