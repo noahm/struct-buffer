@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext",
+    "types": ["jest"],
+    "strict": true
+  },
+  "include": ["*.ts"]
+}
