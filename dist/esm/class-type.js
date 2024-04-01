@@ -110,7 +110,7 @@ export class BitsType extends StructType {
             return data.map((it) => {
                 const result = {};
                 Object.entries(this.bits).forEach(([k, i]) => {
-                    result[k] = ((it & (1 << i)) >> i);
+                    result[k] = !!((it & (1 << i)) >> i);
                 });
                 return result;
             });
@@ -118,7 +118,7 @@ export class BitsType extends StructType {
         else {
             const result = {};
             Object.entries(this.bits).forEach(([k, i]) => {
-                result[k] = ((data & (1 << i)) >> i);
+                result[k] = !!((data & (1 << i)) >> i);
             });
             return result;
         }

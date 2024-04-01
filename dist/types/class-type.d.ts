@@ -1,4 +1,4 @@
-import { Bit_t, DecodeBuffer_t, InjectNext, TypeSize_t } from "./interfaces";
+import { DecodeBuffer_t, InjectNext, TypeSize_t } from "./interfaces";
 type SequenceOf<T> = T extends string ? string : Array<T>;
 export declare const FLOAT_TYPE = "float";
 export declare const DOUBLE_TYPE = "double";
@@ -21,7 +21,7 @@ type BitsType_t = {
     [k: string]: number;
 };
 export declare class BitsType<Template extends BitsType_t, Decoded = {
-    [key in keyof Template]: Bit_t;
+    [key in keyof Template]: boolean;
 }> extends StructType<Decoded, Partial<Decoded>> {
     readonly bits: Template;
     constructor(size: TypeSize_t, bits: Template);
@@ -64,7 +64,7 @@ export declare class Inject extends StructType<any, any> {
 }
 export declare function registerType<D extends number, E extends number>(typeName: string | string[], size: TypeSize_t, unsigned?: boolean): StructType<D, E>;
 export declare function typedef<D extends number, E extends number>(typeName: string | string[], type: StructType<any, any>): StructType<D, E>;
-export declare function bits<Template extends BitsType_t>(type: StructType<number, number>, obj: Template): BitsType<Template, { [key in keyof Template]: Bit_t; }>;
+export declare function bits<Template extends BitsType_t>(type: StructType<number, number>, obj: Template): BitsType<Template, { [key in keyof Template]: boolean; }>;
 export declare function bitFields<Template extends BitsType_t>(type: StructType<number, number>, obj: Template): BitFieldsType<Template, { [key in keyof Template]: number; }>;
 export {};
 //# sourceMappingURL=class-type.d.ts.map
