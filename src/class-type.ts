@@ -14,10 +14,12 @@ import {
   unflattenDeep,
 } from "./utils";
 
+type SequenceOf<T> = T extends string ? string : Array<T>;
+
 export const FLOAT_TYPE = "float";
 export const DOUBLE_TYPE = "double";
 
-const hData: any = {
+const hData = {
   1: {
     1: "getUint8",
     0: "getInt8",
@@ -36,7 +38,7 @@ const hData: any = {
   },
   f: "getFloat32",
   d: "getFloat64",
-};
+} as const;
 
 function typeHandle<D, E>(type: StructType<D, E>): [get: string, set: string] {
   let h: string | undefined = undefined;
@@ -52,7 +54,7 @@ function typeHandle<D, E>(type: StructType<D, E>): [get: string, set: string] {
   if (isFloat) h = hData["f"];
   if (isDouble) h = hData["d"];
 
-  if (!h) h = hData[type.size][+type.unsigned];
+  if (type.size && !h) h = hData[type.size]?.[type.unsigned ? 1 : 0];
   if (!h) throw new Error(`StructBuffer: Unrecognized ${type} type.`);
 
   return [h, h.replace(/^g/, "s")];
@@ -66,7 +68,9 @@ class StructTypeNext {
 
 // D decode return type
 // E encode obj type
-export class StructType<D, E> extends Array<StructType<D[], E[]>> {
+export class StructType<D, E> extends Array<
+  StructType<SequenceOf<D>, SequenceOf<E>>
+> {
   names: string[];
   deeps: number[] = [];
 
