@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- `bits` structures now decode into `boolean` type instead of `0 | 1`
+- `char[n]` fields are now typed as regular strings instead of string arrays
+
 ## 5.3.0 2024-03-28
 
 - ✨ Updated types of `StructBuffer` class and `bits` and `bitFields` functions to have fully typed returns from the `.decode()` method
