@@ -64,6 +64,7 @@ describe("test string_t", () => {
     };
     const view = b2("abcd");
     expect(struct.decode(view)).toEqual(obj);
+    // @ts-expect-error
     expect(sview(struct.encode(obj))).toBe(sview(view));
     expect(struct.byteLength).toBe(4);
   });
@@ -128,7 +129,7 @@ describe("test pos", () => {
       123.23,
       1231.23,
       534.23,
-      873.35
+      873.35,
     );
 
     struct = new StructBuffer("Pos", {
@@ -387,7 +388,7 @@ describe("test toCStruct", () => {
         int16_t sThumbRX;
         int16_t sThumbRY[2];
     } XINPUT_GAMEPAD, *XINPUT_GAMEPAD;
-    `)
+    `),
     );
   });
 });

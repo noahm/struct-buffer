@@ -8,7 +8,7 @@ import {
   zeroMemory,
 } from "./utils";
 
-export type Type_t = StructType<any, any> | StructBuffer;
+export type Type_t = StructType<any, any> | StructBuffer<any, any, any>;
 export type StructBuffer_t = { [k: string]: Type_t };
 
 export type DecodedStructSrc<StructSrc extends StructBuffer_t> = {

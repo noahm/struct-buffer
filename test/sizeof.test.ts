@@ -115,8 +115,8 @@ describe("test sizeof", () => {
         new StructBuffer("Test", {
           a: DWORD,
           b: BYTE,
-        })
-      )
+        }),
+      ),
     ).toBe(8);
 
     expect(
@@ -124,8 +124,8 @@ describe("test sizeof", () => {
         new StructBuffer("Test", {
           a: char[5],
           b: BYTE,
-        })
-      )
+        }),
+      ),
     ).toBe(6);
 
     expect(
@@ -134,8 +134,8 @@ describe("test sizeof", () => {
           a: QWORD,
           b: WORD,
           c: BYTE,
-        })
-      )
+        }),
+      ),
     ).toBe(16);
 
     const A = new StructBuffer("Test", {

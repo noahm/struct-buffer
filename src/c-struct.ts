@@ -140,7 +140,6 @@ export function parse(
           );
         }
 
-        // @ts-expect-error i made the types too strict?
         acc[propName] = p.isList ? type[p.count] : type;
         return acc;
       }, {}),
