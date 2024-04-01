@@ -32,8 +32,8 @@ function typeHandle(type) {
         h = hData["f"];
     if (isDouble)
         h = hData["d"];
-    if (!h)
-        h = hData[type.size][+type.unsigned];
+    if (type.size && !h)
+        h = hData[type.size]?.[type.unsigned ? 1 : 0];
     if (!h)
         throw new Error(`StructBuffer: Unrecognized ${type} type.`);
     return [h, h.replace(/^g/, "s")];

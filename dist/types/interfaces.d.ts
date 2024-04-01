@@ -13,7 +13,7 @@ export interface InjectNext {
     size: number;
     value: any;
 }
-export type TypeSize_t = number;
+export type TypeSize_t = 0 | 1 | 2 | 4 | 8;
 export type Bit_t = 0 | 1;
 export type DecodeBuffer_t = ArrayBufferView | number[];
 //# sourceMappingURL=interfaces.d.ts.map

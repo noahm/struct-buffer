@@ -1,6 +1,6 @@
 import { StructType } from "./class-type";
 import { DecodeBuffer_t } from "./interfaces";
-export type Type_t = StructType<any, any> | StructBuffer;
+export type Type_t = StructType<any, any> | StructBuffer<any, any, any>;
 export type StructBuffer_t = {
     [k: string]: Type_t;
 };
