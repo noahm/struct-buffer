@@ -2,7 +2,7 @@ import { DecodeBuffer_t, InjectNext, TypeSize_t } from "./interfaces";
 type SequenceOf<T> = T extends string ? string : Array<T>;
 export declare const FLOAT_TYPE = "float";
 export declare const DOUBLE_TYPE = "double";
-export declare class StructType<D, E> extends Array<StructType<SequenceOf<D>, SequenceOf<E>>> {
+export declare class StructType<D, E = Partial<D>> extends Array<StructType<SequenceOf<D>, SequenceOf<E>>> {
     size: TypeSize_t;
     readonly unsigned: boolean;
     names: string[];

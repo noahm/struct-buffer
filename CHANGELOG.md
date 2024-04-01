@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 5.4.0 2024-04-01
 
 - `bits` structures now decode into `boolean` type instead of `0 | 1`
 - `char[n]` fields are now typed as regular strings instead of string arrays
