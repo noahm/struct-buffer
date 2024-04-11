@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.4.1 2024-04-10
+
+- Fixed decoded types when using sequences of nested structs
+
 ## 5.4.0 2024-04-01
 
 - `bits` structures now decode into `boolean` type instead of `0 | 1`
