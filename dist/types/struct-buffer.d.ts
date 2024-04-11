@@ -5,7 +5,7 @@ export type StructBuffer_t = {
     [k: string]: Type_t;
 };
 export type DecodedStructSrc<StructSrc extends StructBuffer_t> = {
-    [k in keyof StructSrc]: StructSrc[k] extends StructBuffer<infer NestedSource> ? DecodedStructSrc<NestedSource> : StructSrc[k] extends StructType<infer D, unknown> ? D : never;
+    [k in keyof StructSrc]: StructSrc[k] extends StructBuffer<infer Whatever, infer Decoded> ? Decoded : StructSrc[k] extends StructType<infer D, unknown> ? D : never;
 };
 export declare function sizeof(type: Type_t): number;
 type StructBufferConfig = {
