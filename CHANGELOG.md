@@ -1,10 +1,17 @@
 # Changelog
 
-## 6.0.0 (unreleased, from unpublished upstream branch)
+## 6.0.0
+
+A new major version! This is based on published changes from the original upstream project which included a lot of refactoring and cleanup work.
+
+### BREAKING CHANGES
 
 - 💥 remove `sizeof`, `display`, `c-struct`, `windows type`
 - 🔨 remove `StructBuffer.structName` attribute
 - 🔨 remove `StructType.names` attribute
+
+### Other changes
+
 - ✨ add `LittleEndian` and `RelativeOffset`, how to use can look at the test file.
 - ✅ ✔️ add test
 - 🎨 improve code
