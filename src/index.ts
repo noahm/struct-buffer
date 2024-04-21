@@ -1,8 +1,7 @@
 export * from "./struct-buffer";
-export * from "./types";
-export { registerType, typedef, bits, bitFields, Inject } from "./class-type";
-export * as CStruct from "./c-struct";
-export { display } from "./display";
+export * from "./type";
+export * from "./runtime";
+export * from "./decorator";
 export {
   createDataView,
   makeDataView,

@@ -1,8 +1,7 @@
 // https://docs.python.org/zh-cn/3/library/struct.html#byte-order-size-and-alignment
 
-import { StructType } from "./class-type";
-import { DecodeBuffer_t } from "./interfaces";
-import { sizeof } from "./struct-buffer";
+import { PaddingType, StringType } from "./type";
+import { LikeBuffer_t, IBufferLike } from "./interfaces";
 import {
   bool,
   string_t,
@@ -19,7 +18,7 @@ import {
   ulonglong,
   float,
   double,
-} from "./types";
+} from "./type/types";
 import { createDataView, makeDataView } from "./utils";
 
 // 没有 "@", "="
@@ -27,15 +26,15 @@ const SECTION_ORDER: ReadonlyArray<string> = [">", "<", "!"];
 
 const LEN_EXP = /^(\d+)(?=\w|\?)/i;
 
-function _getTypes(format: string): StructType<any, any>[] {
+function _getTypes(format: string): IBufferLike<any, any>[] {
   let m;
-  const types: StructType<any, any>[] = [];
+  const types: IBufferLike<any, any>[] = [];
   while (format.length) {
     m = format.match(LEN_EXP);
     let len = 1;
     if (m && m[1]) {
       len = parseInt(m[1]);
-      format = format.substr(m[1].length);
+      format = format.substring(m[1].length);
     }
 
     switch (format[0]) {
@@ -90,9 +89,9 @@ function _getTypes(format: string): StructType<any, any>[] {
         types.push(string_t[len]);
         break;
       default:
-        throw new Error(`没有(${format[0]})格式!`);
+        throw new Error(`no (${format[0]}) format!`);
     }
-    format = format.substr(1);
+    format = format.substring(1);
   }
   return types;
 }
@@ -105,11 +104,12 @@ function _getLittleEndian(str: string) {
     case "<":
       return true;
     default:
-      throw new Error("错误的字节序");
+      // 错误的字节序
+      throw new Error("wrong byte order");
   }
 }
 
-function _handleParams(format: string, buffer: DecodeBuffer_t) {
+function _handleParams(format: string, buffer: LikeBuffer_t) {
   format = format.replace(/\s/g, "");
 
   // 获取字节序
@@ -117,7 +117,7 @@ function _handleParams(format: string, buffer: DecodeBuffer_t) {
   let _sr = SECTION_ORDER[0];
   if (SECTION_ORDER.includes(format[0])) {
     _sr = format[0];
-    format = format.substr(1);
+    format = format.substring(1);
   }
 
   return {
@@ -154,7 +154,7 @@ export function pack(format: string, ...args: any[]): DataView {
 
 export function pack_into(
   format: string,
-  buffer: DecodeBuffer_t,
+  buffer: LikeBuffer_t,
   offset: number,
   ...args: any[]
 ): DataView {
@@ -163,17 +163,19 @@ export function pack_into(
     const type = types.shift();
     if (!type) break;
 
-    if (type.is(padding_t)) {
-      type.encode(0 as any, littleEndian, offset, view);
-    } else if (type.is(string_t)) {
-      type.encode(args.shift() as any, littleEndian, offset, view);
+    const opt = { littleEndian, offset, view };
+
+    if (type instanceof PaddingType) {
+      type.encode(0 as any, opt);
+    } else if (type instanceof StringType) {
+      type.encode(args.shift() as any, opt);
     } else {
-      const obj = [];
-      for (let i = 0; i < type.count; i++) obj.push(args.shift());
-      type.encode(obj as any, littleEndian, offset, view);
+      const obj: any[] = [];
+      for (let i = 0; i < type.length; i++) obj.push(args.shift());
+      type.encode(obj, opt);
     }
 
-    offset += sizeof(type);
+    offset += type.byteLength;
   }
 
   return view;
@@ -206,7 +208,7 @@ export function pack_into(
  */
 export function unpack(
   format: string,
-  buffer: DecodeBuffer_t,
+  buffer: LikeBuffer_t,
   offset: number = 0
 ): any[] {
   const { littleEndian, types, view } = _handleParams(format, buffer);
@@ -214,16 +216,16 @@ export function unpack(
   while (types.length) {
     const type = types.shift();
     if (!type) break;
-    if (!type.is(padding_t))
-      result.push(type.decode(view, littleEndian, offset));
-    offset += sizeof(type);
+    if (!(type instanceof PaddingType))
+      result.push(type.decode(view, { littleEndian, offset }));
+    offset += type.byteLength;
   }
   return result.flat();
 }
 
 export function unpack_from(
   format: string,
-  buffer: DecodeBuffer_t,
+  buffer: LikeBuffer_t,
   offset: number = 0
 ): any[] {
   return unpack(format, buffer, offset);
@@ -240,23 +242,21 @@ export function unpack_from(
  * r.next().value // [3, 4]
  * ```
  */
-export function iter_unpack(
-  format: string,
-  buffer: number[] | ArrayBufferView
-) {
-  const size = calcsize(format);
-  let offset = 0;
+export function iter_unpack(format: string, buffer: LikeBuffer_t) {
+  const size = calcsize(format),
+    view = makeDataView(buffer);
+  let offset = 0,
+    isDone = false;
+
   return {
     next() {
-      try {
-        return {
-          value: unpack(format, buffer, offset),
-          done: !(offset += size),
-        };
-      } catch (error) {
-        // overflow
-        return { value: null, done: true };
-      }
+      isDone = offset + size > view.byteLength;
+      return isDone
+        ? { value: null, done: isDone }
+        : {
+            value: unpack(format, view, offset),
+            done: ((offset += size), isDone),
+          };
     },
     [Symbol.iterator]() {
       return this;
@@ -280,7 +280,7 @@ export function calcsize(format: string): number {
   format = format.replace(/\s/g, "");
   if (SECTION_ORDER.includes(format[0])) format = format.substr(1);
   const types = _getTypes(format);
-  return types.reduce((acc, it) => acc + sizeof(it), 0);
+  return types.reduce((acc, it) => acc + it.byteLength, 0);
 }
 
 export class Struct {
@@ -293,19 +293,19 @@ export class Struct {
     return pack_into(this.format, createDataView(this.size), 0, ...args);
   }
 
-  pack_into(buffer: DecodeBuffer_t, offset: number, ...args: any[]) {
+  pack_into(buffer: LikeBuffer_t, offset: number, ...args: any[]) {
     return pack_into(this.format, buffer, offset, ...args);
   }
 
-  unpack(buffer: DecodeBuffer_t, offset = 0) {
+  unpack(buffer: LikeBuffer_t, offset = 0) {
     return unpack(this.format, buffer, offset);
   }
 
-  unpack_from(buffer: DecodeBuffer_t, offset = 0) {
+  unpack_from(buffer: LikeBuffer_t, offset = 0) {
     return unpack(this.format, buffer, offset);
   }
 
-  iter_unpack(buffer: DecodeBuffer_t) {
+  iter_unpack(buffer: LikeBuffer_t) {
     return iter_unpack(this.format, buffer);
   }
 }

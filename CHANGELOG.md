@@ -1,5 +1,14 @@
 # Changelog
 
+## 6.0.0 (unreleased, from unpublished upstream branch)
+
+- 💥 remove `sizeof`, `display`, `c-struct`, `windows type`
+- 🔨 remove `StructBuffer.structName` attribute
+- 🔨 remove `StructType.names` attribute
+- ✨ add `LittleEndian` and `RelativeOffset`, how to use can look at the test file.
+- ✅ ✔️ add test
+- 🎨 improve code
+
 ## 5.4.1 2024-04-10
 
 - Fixed decoded types when using sequences of nested structs
