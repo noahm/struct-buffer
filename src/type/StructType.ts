@@ -30,10 +30,16 @@ abstract class AbstractType<T> extends TypeDeep<T> implements IType {
   }
 }
 
+/**
+ * sequence of strings is still just a string
+ * @todo allow deep 2+ layer deep strings sequences to become arrays of strings
+ */
+type SeqOf<T> = T[] extends string[] ? string : Array<T>;
+
 // D decode return type
 // E encode obj type
 export class StructType<D, E>
-  extends AbstractType<StructType<D[], E[]>>
+  extends AbstractType<StructType<SeqOf<D>, SeqOf<E>>>
   implements IBufferLike<D, E>
 {
   constructor(size: number, unsigned: boolean) {

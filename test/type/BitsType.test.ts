@@ -18,7 +18,7 @@ describe("bits test", () => {
       OF: 11,
     });
     const data = EFLAG.decode(new Uint32Array([eflag_data]), opt);
-    expect([data.ZF, data.PF, data.IF]).toEqual([1, 1, 1]);
+    expect([data.ZF, data.PF, data.IF]).toEqual([true, true, true]);
 
     const view = EFLAG.encode(
       {

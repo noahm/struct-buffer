@@ -21,7 +21,7 @@ export type DecodedStructSrc<StructSrc extends StructBuffer_t> = {
 };
 
 export class StructBuffer<
-    StructSrc extends StructBuffer_t,
+    StructSrc extends StructBuffer_t = StructBuffer_t,
     D = DecodedStructSrc<StructSrc>,
     E = Partial<D>,
   >
