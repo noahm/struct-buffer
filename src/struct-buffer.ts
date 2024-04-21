@@ -9,18 +9,28 @@ import {
 } from "./interfaces";
 import { createDataView, makeDataView, zeroMemory } from "./utils";
 
+export type DecodedStructSrc<StructSrc extends StructBuffer_t> = {
+  [k in keyof StructSrc]: StructSrc[k] extends StructBuffer<
+    infer _Src,
+    infer Decoded
+  >
+    ? Decoded
+    : StructSrc[k] extends IBufferLike<infer Decoded, unknown>
+    ? Decoded
+    : never;
+};
+
 export class StructBuffer<
-    D = {
-      [k in keyof StructBuffer_t]: any;
-    },
+    StructSrc extends StructBuffer_t,
+    D = DecodedStructSrc<StructSrc>,
     E = Partial<D>,
   >
-  extends TypeDeep<StructBuffer<D[], E[]>>
+  extends TypeDeep<StructBuffer<StructSrc, D[], E[]>>
   implements IBufferLike<D, E>
 {
   private readonly structKV: [string, IBufferLike<any, any>][];
 
-  constructor(private readonly struct: StructBuffer_t) {
+  constructor(private readonly struct: StructSrc) {
     super();
     this.structKV = Object.entries(struct);
   }

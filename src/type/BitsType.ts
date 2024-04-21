@@ -9,12 +9,13 @@ import { createDataView } from "../utils";
 import { StructType } from "./StructType";
 
 export class BitsType<
+  Template extends NumberMap_t,
   D = {
-    [key in keyof NumberMap_t]: Bit_t;
+    [key in keyof Template]: boolean;
   },
-  E = Partial<D>
+  E = Partial<D>,
 > extends StructType<D, E> {
-  constructor(size: number, private readonly bits: NumberMap_t) {
+  constructor(size: number, private readonly bits: Template) {
     super(size, true);
   }
 
@@ -22,9 +23,9 @@ export class BitsType<
     const data: number[] | number = super.decode(view, options) as any;
 
     return this.resultEach(data, (num: number) => {
-      const itemResult: { [k: string]: Bit_t } = {};
+      const itemResult: { [k: string]: boolean } = {};
       Object.entries(this.bits).forEach(([flagKey, flagIndex]) => {
-        itemResult[flagKey] = ((num & (1 << flagIndex)) >> flagIndex) as Bit_t;
+        itemResult[flagKey] = !!((num & (1 << flagIndex)) >> flagIndex);
       });
       return itemResult;
     }) as any;
@@ -42,7 +43,7 @@ export class BitsType<
         if (flagIndex !== undefined) acc |= zeroOrOneValue << flagIndex;
         return acc;
       },
-      0
+      0,
     );
   }
 
@@ -62,6 +63,9 @@ export class BitsType<
   }
 }
 
-export function bits(type: StructType<number, number>, obj: NumberMap_t) {
+export function bits<Template extends NumberMap_t>(
+  type: StructType<number, number>,
+  obj: Template,
+) {
   return new BitsType(type.size, obj);
 }

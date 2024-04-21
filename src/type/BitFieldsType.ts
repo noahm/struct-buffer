@@ -42,12 +42,13 @@ import { StructType } from "./StructType";
  * ```
  */
 export class BitFieldsType<
+  Template extends NumberMap_t,
   D = {
-    [key in keyof NumberMap_t]: number;
+    [key in keyof Template]: number;
   },
-  E = Partial<D>
+  E = Partial<D>,
 > extends StructType<D, E> {
-  constructor(size: number, public readonly bitFields: NumberMap_t) {
+  constructor(size: number, public readonly bitFields: Template) {
     super(size, true);
   }
 
@@ -103,6 +104,9 @@ export class BitFieldsType<
   }
 }
 
-export function bitFields(type: StructType<number, number>, obj: NumberMap_t) {
+export function bitFields<Template extends NumberMap_t>(
+  type: StructType<number, number>,
+  obj: Template,
+) {
   return new BitFieldsType(type.size, obj);
 }
