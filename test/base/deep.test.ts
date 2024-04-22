@@ -1,3 +1,4 @@
+import test from "ava";
 import {
   int32_t,
   padding_t,
@@ -9,42 +10,40 @@ import {
   PaddingType,
   StringType,
   StructType,
-} from "../../src";
+} from "../../src/index.js";
 
-describe("deeps test", () => {
-  it("type", () => {
-    let a = int32_t;
-    let b = a[2];
-    let c = b[3];
-    expect((a as any).deeps).toEqual([]);
-    expect((b as any).deeps).toEqual([2]);
-    expect((c as any).deeps).toEqual([2, 3]);
-    expect(a instanceof StructType).toEqual(true);
-    expect(b instanceof StructType).toEqual(true);
-    expect(c instanceof StructType).toEqual(true);
-    expect(padding_t[2][4] instanceof PaddingType).toEqual(true);
-    expect(bits(int32_t, {})[2][2] instanceof BitsType).toEqual(true);
-    expect(string_t[2][2] instanceof StringType).toEqual(true);
-  });
-  it("struct", () => {
-    let a = new StructBuffer({});
-    let b = a[2];
-    let c = b[3];
-    expect((a as any).deeps).toEqual([]);
-    expect((b as any).deeps).toEqual([2]);
-    expect((c as any).deeps).toEqual([2, 3]);
-    expect(a instanceof StructBuffer).toEqual(true);
-    expect(b instanceof StructBuffer).toEqual(true);
-    expect(c instanceof StructBuffer).toEqual(true);
-  });
+test("type", (t) => {
+  let a = int32_t;
+  let b = a[2];
+  let c = b[3];
+  t.deepEqual((a as any).deeps, []);
+  t.deepEqual((b as any).deeps, [2]);
+  t.deepEqual((c as any).deeps, [2, 3]);
+  t.deepEqual(a instanceof StructType, true);
+  t.deepEqual(b instanceof StructType, true);
+  t.deepEqual(c instanceof StructType, true);
+  t.deepEqual(padding_t[2][4] instanceof PaddingType, true);
+  t.deepEqual(bits(int32_t, {})[2][2] instanceof BitsType, true);
+  t.deepEqual(string_t[2][2] instanceof StringType, true);
+});
+test("struct", (t) => {
+  let a = new StructBuffer({});
+  let b = a[2];
+  let c = b[3];
+  t.deepEqual((a as any).deeps, []);
+  t.deepEqual((b as any).deeps, [2]);
+  t.deepEqual((c as any).deeps, [2, 3]);
+  t.deepEqual(a instanceof StructBuffer, true);
+  t.deepEqual(b instanceof StructBuffer, true);
+  t.deepEqual(c instanceof StructBuffer, true);
+});
 
-  it("deeps length", () => {
-    const type = uint8_t[2][3][4];
-    const obj = type.decode(new Array(type.length).fill(1));
-    // console.log(obj);
+test("deeps length", (t) => {
+  const type = uint8_t[2][3][4];
+  const obj = type.decode(new Array(type.length).fill(1));
+  // console.log(obj);
 
-    expect(obj.length).toBe(2);
-    expect(obj[0].length).toBe(3);
-    expect(obj[0][0].length).toBe(4);
-  });
+  t.is(obj.length, 2);
+  t.is(obj[0].length, 3);
+  t.is(obj[0][0].length, 4);
 });

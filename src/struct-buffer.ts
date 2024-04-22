@@ -1,4 +1,4 @@
-import { TypeDeep } from "./base/type-deep";
+import { TypeDeep } from "./base/type-deep.js";
 import {
   AnyObject,
   LikeBuffer_t,
@@ -6,8 +6,8 @@ import {
   IEncodeOptions,
   IBufferLike,
   StructBuffer_t,
-} from "./interfaces";
-import { createDataView, makeDataView, zeroMemory } from "./utils";
+} from "./interfaces.js";
+import { createDataView, makeDataView, zeroMemory } from "./utils.js";
 
 export type DecodedStructSrc<StructSrc extends StructBuffer_t> = {
   [k in keyof StructSrc]: StructSrc[k] extends StructBuffer<

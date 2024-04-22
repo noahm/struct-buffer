@@ -1,10 +1,10 @@
-import { TypeDeep } from "../base/type-deep";
+import { TypeDeep } from "../base/type-deep.js";
 import {
   LikeBuffer_t,
   IBufferLike,
   IDecodeOptions,
   IEncodeOptions,
-} from "../interfaces";
+} from "../interfaces.js";
 
 export default class BufferLikeDecorator<D, E>
   extends TypeDeep<IBufferLike<D[], E[]>>

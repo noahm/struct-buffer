@@ -1,9 +1,16 @@
 {
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "moduleResolution": "NodeNext",
-    "module": "NodeNext",
-    "types": ["jest"],
-    "strict": true
+    // "outDir": "../dist-test",
+    "lib": [
+      "ES2020",
+      "DOM" /* only while TextEncoder/TextDecoder are stuck here */
+    ],
+    "types": ["node"],
+    "strict": true,
+    "noEmit": true,
+    "declaration": false
   },
-  "include": ["*.ts"]
+  "references": [{ "path": "../src/" }],
+  "include": ["./**/*.ts"]
 }

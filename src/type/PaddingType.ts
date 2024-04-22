@@ -1,6 +1,6 @@
-import { LikeBuffer_t, IDecodeOptions, IEncodeOptions } from "../interfaces";
-import { createDataView } from "../utils";
-import { StructType } from "./StructType";
+import { LikeBuffer_t, IDecodeOptions, IEncodeOptions } from "../interfaces.js";
+import { createDataView } from "../utils.js";
+import { StructType } from "./StructType.js";
 
 export class PaddingType extends StructType<number, number> {
   constructor() {

@@ -1,38 +1,43 @@
-import { padding_t, StructBuffer, sview, uint16_t, uint32_t } from "../../src";
+import it from "ava";
+import {
+  padding_t,
+  StructBuffer,
+  sview,
+  uint16_t,
+  uint32_t,
+} from "../../src/index.js";
 
-describe("padding_t", () => {
-  it("encode and decode", () => {
-    const s = new StructBuffer({
-      hp: uint16_t,
-      padding1: padding_t[2],
-      mp: uint32_t,
-    });
-
-    const view = s.encode({
-      hp: 1,
-      mp: 2,
-    });
-
-    expect(sview(view)).toBe("00 01 00 00 00 00 00 02");
-
-    const obj = s.decode(view);
-    expect([obj.hp, obj.mp]).toEqual([1, 2]);
-    expect(obj.padding1).toEqual([0, 0]);
+it("encode and decode", (t) => {
+  const s = new StructBuffer({
+    hp: uint16_t,
+    padding1: padding_t[2],
+    mp: uint32_t,
   });
 
-  it("list", () => {
-    const t = padding_t[2][2];
-
-    const view = t.encode(1 as any);
-    expect(sview(view)).toBe("01 01 01 01");
-
-    const data = t.decode(view);
-
-    expect(data).toEqual([
-      [1, 1],
-      [1, 1],
-    ]);
-
-    expect(padding_t[2].decode([1, 2, 3])).toEqual([1, 2]);
+  const view = s.encode({
+    hp: 1,
+    mp: 2,
   });
+
+  t.is(sview(view), "00 01 00 00 00 00 00 02");
+
+  const obj = s.decode(view);
+  t.deepEqual([obj.hp, obj.mp], [1, 2]);
+  t.deepEqual(obj.padding1, [0, 0]);
+});
+
+it("list", (t) => {
+  const type = padding_t[2][2];
+
+  const view = type.encode(1 as any);
+  t.is(sview(view), "01 01 01 01");
+
+  const data = type.decode(view);
+
+  t.deepEqual(data, [
+    [1, 1],
+    [1, 1],
+  ]);
+
+  t.deepEqual(padding_t[2].decode([1, 2, 3]), [1, 2]);
 });

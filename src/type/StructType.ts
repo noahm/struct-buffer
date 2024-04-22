@@ -7,9 +7,9 @@ import {
   IType,
   DataViewGet_t,
   DataViewSetExcludeBig_t,
-} from "../interfaces";
-import { TypeDeep } from "../base/type-deep";
-import { createDataView, makeDataView, typeHandle } from "../utils";
+} from "../interfaces.js";
+import { TypeDeep } from "../base/type-deep.js";
+import { createDataView, makeDataView, typeHandle } from "../utils.js";
 
 abstract class AbstractType<T> extends TypeDeep<T> implements IType {
   protected readonly get: DataViewGet_t;

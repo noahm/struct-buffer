@@ -3,14 +3,14 @@ import {
   IDecodeOptions,
   IEncodeOptions,
   DataViewSetBig_t,
-} from "../interfaces";
-import { createDataView, makeDataView } from "../utils";
-import { StructType } from "./StructType";
+} from "../interfaces.js";
+import { createDataView, makeDataView } from "../utils.js";
+import { StructType } from "./StructType.js";
 
 export class StringType extends StructType<string, string> {
   constructor(
     private readonly textDecode = new TextDecoder(),
-    private readonly textEncoder = new TextEncoder()
+    private readonly textEncoder = new TextEncoder(),
   ) {
     super(1, true);
   }

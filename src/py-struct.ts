@@ -1,7 +1,7 @@
 // https://docs.python.org/zh-cn/3/library/struct.html#byte-order-size-and-alignment
 
-import { PaddingType, StringType } from "./type";
-import { LikeBuffer_t, IBufferLike } from "./interfaces";
+import { PaddingType, StringType } from "./type/index.js";
+import { LikeBuffer_t, IBufferLike } from "./interfaces.js";
 import {
   bool,
   string_t,
@@ -18,8 +18,8 @@ import {
   ulonglong,
   float,
   double,
-} from "./type/types";
-import { createDataView, makeDataView } from "./utils";
+} from "./type/types.js";
+import { createDataView, makeDataView } from "./utils.js";
 
 // 没有 "@", "="
 const SECTION_ORDER: ReadonlyArray<string> = [">", "<", "!"];
@@ -209,7 +209,7 @@ export function pack_into(
 export function unpack(
   format: string,
   buffer: LikeBuffer_t,
-  offset: number = 0
+  offset: number = 0,
 ): any[] {
   const { littleEndian, types, view } = _handleParams(format, buffer);
   const result: any[] = [];
@@ -226,7 +226,7 @@ export function unpack(
 export function unpack_from(
   format: string,
   buffer: LikeBuffer_t,
-  offset: number = 0
+  offset: number = 0,
 ): any[] {
   return unpack(format, buffer, offset);
 }

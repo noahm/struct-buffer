@@ -1,5 +1,5 @@
-import { AbstractIntAccessArray } from "./AbstractIntAccessArray";
-import { unflattenDeep } from "../utils";
+import { AbstractIntAccessArray } from "./AbstractIntAccessArray.js";
+import { unflattenDeep } from "../utils.js";
 
 /**
  * 结构可以是嵌套的
@@ -44,7 +44,7 @@ export class TypeDeep<T> extends AbstractIntAccessArray<T> {
     if (this.isList && Array.isArray(obj)) obj = obj.flat();
     else obj = [obj];
 
-    const res = [];
+    const res: unknown[] = [];
     for (let i = 0; i < this.length; i++) {
       res.push(cb(obj[i], i));
     }

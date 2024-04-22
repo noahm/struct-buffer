@@ -1,3 +1,4 @@
+import test from "ava";
 import {
   StructBuffer,
   uint32_t,
@@ -5,81 +6,79 @@ import {
   uint8_t,
   sbytes as b,
   bitFields,
-} from "../../src";
+} from "../../src/index.js";
 
 // https://github.com/januwA/struct-buffer/issues/3
 
-describe("test bitFields", () => {
-  it("test 1", () => {
-    const s = new StructBuffer({
-      a: bitFields(uint8_t, {
-        alpha: 2,
-        beta: 4,
-        gamma: 2,
-      }),
-      b: uint32_t,
-    });
-
-    const v = s.encode({
-      a: {
-        alpha: 1,
-        beta: 2,
-        gamma: 3,
-      },
-      b: 10,
-    });
-    expect(sview(v).toUpperCase()).toBe("C9 00 00 00 0A");
-
-    const data = s.decode(b("C9 00 00 00 0A"));
-    expect(data.a.alpha).toBe(1);
-    expect(data.a.beta).toBe(2);
-    expect(data.a.gamma).toBe(3);
-    expect(data.b).toBe(10);
+test("test 1", (t) => {
+  const s = new StructBuffer({
+    a: bitFields(uint8_t, {
+      alpha: 2,
+      beta: 4,
+      gamma: 2,
+    }),
+    b: uint32_t,
   });
 
-  it("test 2", () => {
-    const bf = bitFields(uint8_t, {
+  const v = s.encode({
+    a: {
+      alpha: 1,
+      beta: 2,
+      gamma: 3,
+    },
+    b: 10,
+  });
+  t.is(sview(v).toUpperCase(), "C9 00 00 00 0A");
+
+  const data = s.decode(b("C9 00 00 00 0A"));
+  t.is(data.a.alpha, 1);
+  t.is(data.a.beta, 2);
+  t.is(data.a.gamma, 3);
+  t.is(data.b, 10);
+});
+
+test("test 2", (t) => {
+  const bf = bitFields(uint8_t, {
+    a: 1,
+    b: 2,
+    c: 3,
+  });
+
+  const v = bf.encode({
+    a: 1,
+    b: 2,
+    c: 3,
+  });
+  t.is(sview(v), "1d");
+
+  const data = bf.decode(v);
+  t.deepEqual([data.a, data.b, data.c], [1, 2, 3]);
+});
+
+test("test list", (t) => {
+  const bf = bitFields(uint8_t, {
+    a: 1,
+    b: 2,
+    c: 3,
+  })[2];
+
+  const v = bf.encode([
+    {
       a: 1,
       b: 2,
       c: 3,
-    });
-
-    const v = bf.encode({
+    },
+    {
       a: 1,
       b: 2,
       c: 3,
-    });
-    expect(sview(v)).toBe("1d");
+    },
+  ]);
+  t.is(sview(v), "1d 1d");
 
-    const data = bf.decode(v);
-    expect([data.a, data.b, data.c]).toEqual([1, 2, 3]);
-  });
+  const data = bf.decode(v);
 
-  it("test list", () => {
-    const bf = bitFields(uint8_t, {
-      a: 1,
-      b: 2,
-      c: 3,
-    })[2];
-
-    const v = bf.encode([
-      {
-        a: 1,
-        b: 2,
-        c: 3,
-      },
-      {
-        a: 1,
-        b: 2,
-        c: 3,
-      },
-    ]);
-    expect(sview(v)).toBe("1d 1d");
-
-    const data = bf.decode(v);
-
-    expect(data.length).toBe(2);
-    expect([data[0].a, data[0].b, data[0].c]).toEqual([1, 2, 3]);
-    expect([data[1].a, data[1].b, data[1].c]).toEqual([1, 2, 3]);
-  });
+  t.is(data.length, 2);
+  t.deepEqual([data[0].a, data[0].b, data[0].c], [1, 2, 3]);
+  t.deepEqual([data[1].a, data[1].b, data[1].c], [1, 2, 3]);
 });

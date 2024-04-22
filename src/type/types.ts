@@ -6,7 +6,7 @@ import {
   FloatType,
   PaddingType,
   StringType,
-} from "./";
+} from "./index.js";
 
 export const string_t = new StringType();
 export const padding_t = new PaddingType();

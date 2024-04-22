@@ -3,8 +3,8 @@ import {
   IDecodeOptions,
   IEncodeOptions,
   IBufferLike,
-} from "../interfaces";
-import RuntimeType from "./RuntimeType";
+} from "../interfaces.js";
+import RuntimeType from "./RuntimeType.js";
 
 export class Defer<D, E> extends RuntimeType<D, E> {
   constructor(private readonly bufferLikeFactory: () => IBufferLike<D, E>) {

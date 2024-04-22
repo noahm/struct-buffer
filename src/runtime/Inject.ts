@@ -4,9 +4,9 @@ import {
   IEncodeOptions,
   InjectDecode_t,
   InjectEncode_t,
-} from "../interfaces";
-import { createDataView, makeDataView, realloc } from "../utils";
-import RuntimeType from "./RuntimeType";
+} from "../interfaces.js";
+import { createDataView, makeDataView, realloc } from "../utils.js";
+import RuntimeType from "./RuntimeType.js";
 
 export class Inject<D, E> extends RuntimeType<D, E> {
   /**
@@ -14,7 +14,7 @@ export class Inject<D, E> extends RuntimeType<D, E> {
    */
   constructor(
     private readonly injectDecode?: InjectDecode_t,
-    private readonly injectEncode?: InjectEncode_t
+    private readonly injectEncode?: InjectEncode_t,
   ) {
     super();
   }

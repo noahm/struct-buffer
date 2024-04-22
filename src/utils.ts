@@ -3,7 +3,7 @@ import {
   DataViewSetExcludeBig_t,
   LikeBuffer_t,
   IType,
-} from "./interfaces";
+} from "./interfaces.js";
 
 /**
  * 设置数组嵌套层数
@@ -14,7 +14,7 @@ import {
 export function unflattenDeep(
   array: any[] | string,
   deeps: number[],
-  isString = false
+  isString = false,
 ) {
   let r: any = array;
 
@@ -145,12 +145,14 @@ export function sbytes2(str: string, te = new TextEncoder()): DataView {
  */
 export function sview(view: LikeBuffer_t): string {
   const v = makeDataView(view);
-  const lst = [];
+  const lst: string[] = [];
   for (let i = 0; i < v.byteLength; i++) {
     lst.push(v.getUint8(i).toString(16).padStart(2, "0"));
   }
   return lst.join(" ");
 }
+
+type Placeholder = ((byte: number) => string) | string;
 
 /**
  * ```ts
@@ -162,16 +164,17 @@ export function sview(view: LikeBuffer_t): string {
  * // => "abc^^xyz^^^^^^^^"
  * ```
  */
-export function TEXT(
-  buf: LikeBuffer_t,
-  placeholder?: ((byte: number) => string) | string
-): string;
+export function TEXT(buf: LikeBuffer_t, placeholder?: Placeholder): string;
 export function TEXT(
   buf: LikeBuffer_t,
   text?: TextDecoder,
-  placeholder?: ((byte: number) => string) | string
+  placeholder?: Placeholder,
 ): string;
-export function TEXT(buf: LikeBuffer_t, text?: any, placeholder?: any): string {
+export function TEXT(
+  buf: LikeBuffer_t,
+  text?: TextDecoder | Placeholder,
+  placeholder?: Placeholder,
+): string {
   const view = makeDataView(buf);
 
   if (!text && !placeholder) {
@@ -193,7 +196,7 @@ export function TEXT(buf: LikeBuffer_t, text?: any, placeholder?: any): string {
         strBytes.push(byte);
       } else {
         if (strBytes.length) {
-          str += text.decode(Uint8Array.from(strBytes));
+          str += text!.decode(Uint8Array.from(strBytes));
           strBytes = [];
         }
         str += placeholder
@@ -203,7 +206,7 @@ export function TEXT(buf: LikeBuffer_t, text?: any, placeholder?: any): string {
           : ".";
       }
     } catch (error) {
-      if (strBytes.length) str += text.decode(Uint8Array.from(strBytes));
+      if (strBytes.length) str += text!.decode(Uint8Array.from(strBytes));
       break;
     }
   }
@@ -222,7 +225,7 @@ export function realloc(
   mem: LikeBuffer_t,
   size: number,
   pushMem?: LikeBuffer_t,
-  pushOffset?: number
+  pushOffset?: number,
 ) {
   const nmem = makeDataView(mem);
   const v = createDataView(size);
@@ -271,7 +274,7 @@ const hData: {
 };
 
 export function typeHandle<T extends IType>(
-  type: T
+  type: T,
 ): [get: DataViewGet_t, set: DataViewSetExcludeBig_t] {
   if (!type.size) return ["getUint8", "setUint8"];
 

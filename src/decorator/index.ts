@@ -1,2 +1,2 @@
-export * from "./LittleEndian";
-export * from "./RelativeOffset";
+export * from "./LittleEndian.js";
+export * from "./RelativeOffset.js";

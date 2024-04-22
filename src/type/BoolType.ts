@@ -1,9 +1,9 @@
-import { LikeBuffer_t, IDecodeOptions, IEncodeOptions } from "../interfaces";
-import { StructType } from "./StructType";
+import { LikeBuffer_t, IDecodeOptions, IEncodeOptions } from "../interfaces.js";
+import { StructType } from "./StructType.js";
 
 export class BoolType<
   D extends boolean,
-  E extends boolean | number | bigint
+  E extends boolean | number | bigint,
 > extends StructType<D, E> {
   constructor(type: StructType<any, any>) {
     super(type.size, type.unsigned);

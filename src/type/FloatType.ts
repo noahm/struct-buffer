@@ -1,4 +1,4 @@
-import { StructType } from "./StructType";
+import { StructType } from "./StructType.js";
 
 export class FloatType extends StructType<number, number> {
   override get isFloat(): boolean {

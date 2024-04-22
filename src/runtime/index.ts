@@ -1,2 +1,2 @@
-export * from "./Inject";
-export * from "./Defer";
+export * from "./Inject.js";
+export * from "./Defer.js";

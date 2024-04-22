@@ -1,11 +1,11 @@
-import { createDataView } from "../utils";
+import { createDataView } from "../utils.js";
 import {
   LikeBuffer_t,
   IDecodeOptions,
   IEncodeOptions,
   NumberMap_t,
-} from "../interfaces";
-import { StructType } from "./StructType";
+} from "../interfaces.js";
+import { StructType } from "./StructType.js";
 
 /**
  * ## bit-fields

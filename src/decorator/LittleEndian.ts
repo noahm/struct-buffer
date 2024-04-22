@@ -3,8 +3,8 @@ import {
   IDecodeOptions,
   IEncodeOptions,
   IBufferLike,
-} from "../interfaces";
-import BufferLikeDecorator from "./BufferLikeDecorator";
+} from "../interfaces.js";
+import BufferLikeDecorator from "./BufferLikeDecorator.js";
 
 export class LittleEndian<D, E> extends BufferLikeDecorator<D, E> {
   override intAccess(i: number) {

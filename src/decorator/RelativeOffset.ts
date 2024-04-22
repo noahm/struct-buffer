@@ -1,11 +1,11 @@
-import { createDataView } from "../utils";
+import { createDataView } from "../utils.js";
 import {
   LikeBuffer_t,
   IDecodeOptions,
   IEncodeOptions,
   IBufferLike,
-} from "../interfaces";
-import BufferLikeDecorator from "./BufferLikeDecorator";
+} from "../interfaces.js";
+import BufferLikeDecorator from "./BufferLikeDecorator.js";
 
 export class RelativeOffset<D, E> extends BufferLikeDecorator<D, E> {
   constructor(src: IBufferLike<D, E>, private readonly relativeOffset = 0) {

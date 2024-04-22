@@ -4,9 +4,9 @@ import {
   IDecodeOptions,
   IEncodeOptions,
   NumberMap_t,
-} from "../interfaces";
-import { createDataView } from "../utils";
-import { StructType } from "./StructType";
+} from "../interfaces.js";
+import { createDataView } from "../utils.js";
+import { StructType } from "./StructType.js";
 
 export class BitsType<
   Template extends NumberMap_t,

@@ -1,39 +1,40 @@
-import { IBufferLike } from "../../src/interfaces";
-import { Defer, int16_t, sview } from "../../src";
+import test from "ava";
+import { IBufferLike } from "../../src/interfaces.js";
+import { Defer, int16_t, sview } from "../../src/index.js";
 
-describe("Defer test", () => {
-  let t1: Defer<number, number>,
-    t2: Defer<number[], number[]>,
-    t3: IBufferLike<any, any>;
+let t1: Defer<number, number>,
+  t2: Defer<number[], number[]>,
+  t3: IBufferLike<any, any>;
 
-  beforeAll(() => {
-    t1 = new Defer(() => int16_t);
-    t2 = new Defer(() => int16_t[2]);
-    t3 = new Defer(() => int16_t[2])[3]; //like: new Defer(() => int16_t[2][3])
-  });
+test.before(() => {
+  t1 = new Defer(() => int16_t);
+  t2 = new Defer(() => int16_t[2]);
+  t3 = new Defer(() => int16_t[2])[3]; //like: new Defer(() => int16_t[2][3])
+});
 
-  it("byteLength", () => {
-    expect(t1.byteLength).toBe(2);
-    expect(t2.byteLength).toBe(4);
-    expect(t3.byteLength).toBe(4 * 3);
-  });
+test("byteLength", (t) => {
+  t.is(t1.byteLength, 2);
+  t.is(t2.byteLength, 4);
+  t.is(t3.byteLength, 4 * 3);
+});
 
-  it("decode and encode", () => {
-    const d1 = 1,
-      d2 = [1, 2],
-      d3 = [[1, 2, 3], [4, 5, 6]];
+test("decode and encode", (t) => {
+  const d1 = 1,
+    d2 = [1, 2],
+    d3 = [
+      [1, 2, 3],
+      [4, 5, 6],
+    ];
 
-    const v1 = t1.encode(d1),
-      v2 = t2.encode(d2),
-      v3 = t3.encode(d3);
+  const v1 = t1.encode(d1),
+    v2 = t2.encode(d2),
+    v3 = t3.encode(d3);
 
-    expect(sview(v1)).toBe("00 01");
-    expect(sview(v2)).toBe("00 01 00 02");
-    expect(sview(v3)).toBe("00 01 00 02 00 03 00 04 00 05 00 06");
+  t.is(sview(v1), "00 01");
+  t.is(sview(v2), "00 01 00 02");
+  t.is(sview(v3), "00 01 00 02 00 03 00 04 00 05 00 06");
 
-    expect(t1.decode(v1)).toBe(d1);
-    expect(t2.decode(v2)).toEqual(d2);
-    expect(t3.decode(v3)).toEqual(d3);
-    
-  });
+  t.is(t1.decode(v1), d1);
+  t.deepEqual(t2.decode(v2), d2);
+  t.deepEqual(t3.decode(v3), d3);
 });
