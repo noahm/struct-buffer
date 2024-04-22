@@ -3,7 +3,7 @@
   "version": "6.0.0",
   "description": "Add structure to ArrayBuffer",
   "type": "module",
-  "main": "./dist/struct-buffer.js",
+  "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc --build",

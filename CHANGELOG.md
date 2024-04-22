@@ -6,13 +6,14 @@ A new major version! This is based on published changes from the original upstre
 
 ### BREAKING CHANGES
 
+- 📦 Package is now published as ESM only. UMD build has been removed.
 - 💥 remove `sizeof`, `display`, `c-struct`, `windows type`
 - 🔨 remove `StructBuffer.structName` attribute
 - 🔨 remove `StructType.names` attribute
 
 ### Other changes
 
-- ✨ add `LittleEndian` and `RelativeOffset`, how to use can look at the test file.
+- ✨ add `LittleEndian` and `RelativeOffset`. See unit tests for example usage
 - ✅ ✔️ add test
 - 🎨 improve code
 
