@@ -1,8 +1,7 @@
-export * from "./struct-buffer";
-export * from "./types";
-export { registerType, typedef, bits, bitFields, Inject } from "./class-type";
-export * as CStruct from "./c-struct";
-export { display } from "./display";
+export * from "./struct-buffer.js";
+export * from "./type/index.js";
+export * from "./runtime/index.js";
+export * from "./decorator/index.js";
 export {
   createDataView,
   makeDataView,
@@ -11,7 +10,7 @@ export {
   sview,
   TEXT,
   realloc,
-} from "./utils";
+} from "./utils.js";
 export {
   pack,
   pack_into,
@@ -20,4 +19,4 @@ export {
   iter_unpack,
   calcsize,
   Struct,
-} from "./py-struct";
+} from "./py-struct.js";
