@@ -1,21 +1,20 @@
 import { TypeDeep } from "./base/type-deep.js";
-import {
+import type {
   AnyObject,
   LikeBuffer_t,
   IDecodeOptions,
   IEncodeOptions,
   IBufferLike,
   StructBuffer_t,
+  IDecode,
 } from "./interfaces.js";
+import type { Inject } from "./runtime/Inject.js";
 import { createDataView, makeDataView, zeroMemory } from "./utils.js";
 
 export type DecodedStructSrc<StructSrc extends StructBuffer_t> = {
-  [k in keyof StructSrc]: StructSrc[k] extends StructBuffer<
-    infer _Src,
-    infer Decoded
-  >
+  [k in keyof StructSrc]: StructSrc[k] extends Inject<infer Decoded>
     ? Decoded
-    : StructSrc[k] extends IBufferLike<infer Decoded, unknown>
+    : StructSrc[k] extends IDecode<infer Decoded>
     ? Decoded
     : never;
 };
