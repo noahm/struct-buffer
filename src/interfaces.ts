@@ -3,7 +3,7 @@ export interface AnyObject {
   [index: number]: any;
 }
 
-export interface InjectNext {
+export interface InjectNext<Decoded> {
   /**
    * how many bytes are consumed
    */
@@ -12,7 +12,7 @@ export interface InjectNext {
   /**
    * parsed result
    */
-  value: any;
+  value: Decoded;
 }
 
 export type TypeSize_t = 0 | 1 | 2 | 4 | 8;
@@ -74,5 +74,8 @@ export type StructBuffer_t = { [k: string]: IBufferLike<any, any> };
 
 export type NumberMap_t = { [k: string]: number };
 
-export type InjectDecode_t = (view: DataView, offset: number) => InjectNext;
-export type InjectEncode_t = (value: any) => LikeBuffer_t;
+export type InjectDecode_t<Decoded> = (
+  view: DataView,
+  offset: number,
+) => InjectNext<Decoded>;
+export type InjectEncode_t<Encodable> = (value: Encodable) => LikeBuffer_t;

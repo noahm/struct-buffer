@@ -8,13 +8,13 @@ import {
 import { createDataView, makeDataView, realloc } from "../utils.js";
 import RuntimeType from "./RuntimeType.js";
 
-export class Inject<D, E> extends RuntimeType<D, E> {
+export class Inject<D, E = Partial<D>> extends RuntimeType<D, E> {
   /**
    * Customize the working content of decode and encode
    */
   constructor(
-    private readonly injectDecode?: InjectDecode_t,
-    private readonly injectEncode?: InjectEncode_t,
+    private readonly injectDecode?: InjectDecode_t<D>,
+    private readonly injectEncode?: InjectEncode_t<E>,
   ) {
     super();
   }
@@ -35,7 +35,7 @@ export class Inject<D, E> extends RuntimeType<D, E> {
     });
   }
 
-  encode(obj: any, options?: IEncodeOptions): DataView {
+  encode(obj: E, options?: IEncodeOptions): DataView {
     let view = createDataView(0, options?.view);
     if (!this.injectEncode) return view;
 
