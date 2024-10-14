@@ -1,4 +1,9 @@
-import { DecodeBuffer_t, Type } from "./interfaces";
+import {
+  DataViewGet_t,
+  DataViewSetExcludeBig_t,
+  LikeBuffer_t,
+  IType,
+} from "./interfaces.js";
 
 /**
  * 设置数组嵌套层数
@@ -9,7 +14,7 @@ import { DecodeBuffer_t, Type } from "./interfaces";
 export function unflattenDeep(
   array: any[] | string,
   deeps: number[],
-  isString = false
+  isString = false,
 ) {
   let r: any = array;
 
@@ -54,7 +59,7 @@ export function createDataView(byteLength: number, view?: DataView) {
  * ```
  * @param view
  */
-export function makeDataView(view: DecodeBuffer_t): DataView {
+export function makeDataView(view: LikeBuffer_t): DataView {
   if (view instanceof DataView) return view;
   if (Array.isArray(view)) view = Uint8Array.from(view);
   if (!ArrayBuffer.isView(view))
@@ -62,27 +67,8 @@ export function makeDataView(view: DecodeBuffer_t): DataView {
   return new DataView(view.buffer);
 }
 
-export function arrayProxy(
-  context: any,
-  cb: (target: any, index: number) => any
-) {
-  return new Proxy(context, {
-    get(t: any, k: string | number | symbol) {
-      if (k in t) return t[k];
-      if (/\d+/.test(k.toString())) return cb(t, parseInt(k as string));
-    },
-  });
-}
-
-export function arrayProxyNext(context: any, klass: Type<any>) {
-  return arrayProxy(context, (t, i) => {
-    const next = new klass();
-    Object.setPrototypeOf(next, context);
-    Object.assign(next, t);
-    next.deeps = [...(context.deeps ?? []), i];
-    return next;
-  });
-}
+const HEX_PREFIX_EXP = /0x|h|\\x|\s/gi;
+const HEX_BYTE_EXP = /([0-9a-f]{2})(?=[0-9a-f])/gi;
 
 /**
  * ```
@@ -97,12 +83,10 @@ export function arrayProxyNext(context: any, klass: Type<any>) {
  * ```
  */
 export function sbytes(str: string): DataView {
-  str = str.replace(/0x|h|\\x|\s/gi, "");
+  str = str.replace(HEX_PREFIX_EXP, "");
   if (str.length % 2 !== 0) str = str.slice(0, -1);
-  str = str.replace(/([0-9a-f]{2})(?=[0-9a-f])/gi, "$1 ");
-  return new DataView(
-    Uint8Array.from(str.split(/\s+/).map((it) => parseInt(it, 16))).buffer
-  );
+  str = str.replace(HEX_BYTE_EXP, "$1 ");
+  return makeDataView(str.split(/\s+/).map((it) => parseInt(it, 16)));
 }
 
 const HEX_EXP = /^(0x([0-9a-f]{1,2})|([0-9a-f]{1,2})h|\\x([0-9a-f]{1,2}))/i;
@@ -121,13 +105,13 @@ const HEX_SEARCH_EXP = /0x([0-9a-f]{1,2})|([0-9a-f]{1,2})h|\\x([0-9a-f]{1,2})/i;
  */
 export function sbytes2(str: string, te = new TextEncoder()): DataView {
   let m;
-  const bytes = [];
+  const bytes: number[] = [];
   while (str.length) {
     m = str.match(HEX_EXP);
     if (m && m[1]) {
       const v = m[2] ?? m[3] ?? m[4] ?? 0;
       bytes.push(parseInt(v, 16));
-      str = str.substr(m[1].length);
+      str = str.substring(m[1].length);
     } else if (str.length) {
       const i = str.search(HEX_SEARCH_EXP);
       if (i < 0) {
@@ -135,14 +119,14 @@ export function sbytes2(str: string, te = new TextEncoder()): DataView {
         bytes.push(...te.encode(str));
         str = "";
       } else {
-        const s = str.substr(0, i);
+        const s = str.substring(0, i);
         bytes.push(...te.encode(s));
-        str = str.substr(i);
+        str = str.substring(i);
       }
     }
   }
 
-  return new DataView(Uint8Array.from(bytes).buffer);
+  return makeDataView(bytes);
 }
 
 /**
@@ -159,14 +143,16 @@ export function sbytes2(str: string, te = new TextEncoder()): DataView {
  * // => 61 62 63 01 02 03
  * ```
  */
-export function sview(view: DecodeBuffer_t): string {
+export function sview(view: LikeBuffer_t): string {
   const v = makeDataView(view);
-  const lst = [];
+  const lst: string[] = [];
   for (let i = 0; i < v.byteLength; i++) {
     lst.push(v.getUint8(i).toString(16).padStart(2, "0"));
   }
   return lst.join(" ");
 }
+
+type Placeholder = ((byte: number) => string) | string;
 
 /**
  * ```ts
@@ -178,19 +164,16 @@ export function sview(view: DecodeBuffer_t): string {
  * // => "abc^^xyz^^^^^^^^"
  * ```
  */
+export function TEXT(buf: LikeBuffer_t, placeholder?: Placeholder): string;
 export function TEXT(
-  buf: number[] | ArrayBufferView,
-  placeholder?: ((byte: number) => string) | string
-): string;
-export function TEXT(
-  buf: number[] | ArrayBufferView,
+  buf: LikeBuffer_t,
   text?: TextDecoder,
-  placeholder?: ((byte: number) => string) | string
+  placeholder?: Placeholder,
 ): string;
 export function TEXT(
-  buf: number[] | ArrayBufferView,
-  text?: any,
-  placeholder?: any
+  buf: LikeBuffer_t,
+  text?: TextDecoder | Placeholder,
+  placeholder?: Placeholder,
 ): string {
   const view = makeDataView(buf);
 
@@ -205,7 +188,7 @@ export function TEXT(
   }
   let offset = 0;
   let str = "";
-  let strBytes = [];
+  let strBytes: number[] = [];
   while (true) {
     try {
       const byte = view.getUint8(offset++);
@@ -213,7 +196,7 @@ export function TEXT(
         strBytes.push(byte);
       } else {
         if (strBytes.length) {
-          str += text.decode(Uint8Array.from(strBytes));
+          str += text!.decode(Uint8Array.from(strBytes));
           strBytes = [];
         }
         str += placeholder
@@ -223,18 +206,26 @@ export function TEXT(
           : ".";
       }
     } catch (error) {
-      if (strBytes.length) str += text.decode(Uint8Array.from(strBytes));
+      if (strBytes.length) str += text!.decode(Uint8Array.from(strBytes));
       break;
     }
   }
   return str;
 }
 
+/**
+ *
+ * @param mem src memory
+ * @param size new memory size
+ * @param pushMem this will push to new memory
+ * @param pushOffset this parameter is required if pushMem is set
+ * @returns new memory
+ */
 export function realloc(
-  mem: DecodeBuffer_t,
+  mem: LikeBuffer_t,
   size: number,
-  pushMem?: DecodeBuffer_t,
-  pushOffset?: number
+  pushMem?: LikeBuffer_t,
+  pushOffset?: number,
 ) {
   const nmem = makeDataView(mem);
   const v = createDataView(size);
@@ -253,4 +244,47 @@ export function realloc(
   }
 
   return v;
+}
+
+const hData: {
+  readonly [size: number | string]:
+    | {
+        [unsigned: number]: DataViewGet_t;
+      }
+    | DataViewGet_t;
+} = {
+  1: {
+    1: "getUint8",
+    0: "getInt8",
+  },
+  2: {
+    1: "getUint16",
+    0: "getInt16",
+  },
+  4: {
+    1: "getUint32",
+    0: "getInt32",
+  },
+  8: {
+    1: "getBigUint64",
+    0: "getBigInt64",
+  },
+  f: "getFloat32",
+  d: "getFloat64",
+};
+
+export function typeHandle<T extends IType>(
+  type: T,
+): [get: DataViewGet_t, set: DataViewSetExcludeBig_t] {
+  if (!type.size) return ["getUint8", "setUint8"];
+
+  let h: DataViewGet_t | undefined = undefined;
+
+  if (type.isFloat) h = hData["f"] as DataViewGet_t;
+  if (type.isDouble) h = hData["d"] as DataViewGet_t;
+
+  if (!h) h = hData[type.size][+type.unsigned] as DataViewGet_t;
+  if (!h) throw new Error(`StructBuffer: Unrecognized ${type} type.`);
+
+  return [h, h.replace(/^g/, "s") as DataViewSetExcludeBig_t];
 }
