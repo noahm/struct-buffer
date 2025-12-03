@@ -32,9 +32,9 @@
     "url": "https://github.com/noahm/struct-buffer.git"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.12",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.11.30",
-    "jest": "^29.7.0",
+    "jest": "^30.0.0",
     "node-notifier": "^10.0.1",
     "ts-jest": "^29.1.2",
     "ts-loader": "^9.5.1",
