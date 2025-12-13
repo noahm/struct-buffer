@@ -2,9 +2,8 @@
 .vscode
 .pnp*
 .yarn*
+renovate.json
 test
-jest.config.js
 tsconfig.*
 *.tgz
-webpack.config.js
 yarn.lock
