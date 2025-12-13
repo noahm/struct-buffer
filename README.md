@@ -17,7 +17,7 @@ $ npm i @nmann/struct-buffer
 ```ts
 import { float, string_t, StructBuffer, pack } from "@nmann/struct-buffer";
 
-const struct = new StructBuffer("Player", {
+const struct = new StructBuffer({
   hp: float,
   mp: float,
   name: string_t[3],
@@ -43,30 +43,30 @@ const view = struct.encode({
 ```html
 <script src="struct-buffer.js"></script>
 <script>
-  const { DWORD, string_t, StructBuffer, uint32_t } = window.StructBuffer;
+  const { string_t, StructBuffer, uint32_t } = window.StructBuffer;
 </script>
 ```
 
 ## Use ["type"](https://github.com/noahm/struct-buffer/blob/main/src/types.ts) for conversion
 
 ```ts
-import { DWORD } from "@nmann/struct-buffer";
+import { uint64_t } from "@nmann/struct-buffer";
 
 // encode
-const view = DWORD[2].encode([1, 2]);
+const view = uint64_t[2].encode([1, 2]);
 // view => <00 00 00 01 00 00 00 02>
 
 // decode
-const data = DWORD[2].decode(view);
+const data = uint64_t[2].decode(view);
 // data => [ 1, 2 ]
 ```
 
 ## register Type
 
 ```ts
-const myShort = registerType("short", 2, false);
+const myShort = registerType(2, false);
 
-const struct = new StructBuffer("Player", {
+const struct = new StructBuffer({
   hp: myShort,
   mp: myShort,
   pos: myShort[2],
@@ -88,7 +88,7 @@ const data = struct.decode(view);
 ## typedef
 
 ```ts
-const HANDLE = typedef("HANDLE", DWORD);
+const HANDLE = typedef("HANDLE", uint64_t);
 HANDLE.size; // 4
 HANDLE.unsigned; // true
 ```
@@ -114,18 +114,18 @@ typedef struct _XINPUT_GAMEPAD {
 } XINPUT_GAMEPAD, *PXINPUT_GAMEPAD;
 */
 
-XINPUT_GAMEPAD = new StructBuffer("XINPUT_GAMEPAD", {
-  wButtons: WORD,
-  bLeftTrigger: BYTE,
-  bRightTrigger: BYTE,
+XINPUT_GAMEPAD = new StructBuffer({
+  wButtons: uint16_t,
+  bLeftTrigger: uint8_t,
+  bRightTrigger: uint8_t,
   sThumbLX: int16_t,
   sThumbLY: int16_t,
   sThumbRX: int16_t,
   sThumbRY: int16_t,
 });
 
-XINPUT_STATE = new StructBuffer("XINPUT_STATE", {
-  dwPacketNumber: DWORD,
+XINPUT_STATE = new StructBuffer({
+  dwPacketNumber: uint32_t,
   Gamepad: XINPUT_GAMEPAD,
 });
 
@@ -166,61 +166,15 @@ XINPUT_STATE.encode({
 });
 ```
 
-## parse c-struct
-
-```ts
-import { CStruct } from "@nmann/struct-buffer";
-
-const cStruct = `
-//
-// Structures used by XInput APIs
-//
-typedef struct _XINPUT_GAMEPAD
-{
-    WORD                                wButtons;
-    BYTE                                bLeftTrigger;
-    BYTE                                bRightTrigger;
-    SHORT                               sThumbLX;
-    SHORT                               sThumbLY;
-    SHORT                               sThumbRX;
-    SHORT                               sThumbRY;
-} XINPUT_GAMEPAD, *PXINPUT_GAMEPAD;
-
-typedef struct _XINPUT_STATE
-{
-    DWORD                               dwPacketNumber;
-    XINPUT_GAMEPAD                      Gamepad;
-} XINPUT_STATE, *PXINPUT_STATE;
-
-typedef struct _XINPUT_VIBRATION
-{
-    WORD                                wLeftMotorSpeed;
-    WORD                                wRightMotorSpeed;
-} XINPUT_VIBRATION, *PXINPUT_VIBRATION;
-
-typedef struct _XINPUT_BATTERY_INFORMATION
-{
-    BYTE BatteryType;
-    BYTE BatteryLevel;
-} XINPUT_BATTERY_INFORMATION, *PXINPUT_BATTERY_INFORMATION;
-`;
-
-const structs = CStruct.parse(cStruct);
-sizeof(structs.XINPUT_GAMEPAD); // 12
-sizeof(structs.XINPUT_STATE); // 16
-sizeof(structs.XINPUT_VIBRATION); // 4
-sizeof(structs.XINPUT_BATTERY_INFORMATION); // 2
-```
-
 ## struct list
 
 ```ts
-const User = new StructBuffer("User", {
+const User = new StructBuffer({
   name: string_t[2],
   name2: string_t[2],
 });
 
-const Users = new StructBuffer("Users", {
+const Users = new StructBuffer({
   users: User[2],
 });
 
@@ -239,35 +193,6 @@ const users = User[2].decode(
 // users => [ { name: 'a1', name2: 'a2' }, { name: 'b1', name2: 'b2' } ]
 ```
 
-## StructBuffer to c-struct
-
-```ts
-import { CStruct } from "@nmann/struct-buffer";
-
-const XINPUT_GAMEPAD = new StructBuffer("XINPUT_GAMEPAD", {
-  wButtons: WORD,
-  bLeftTrigger: BYTE,
-  bRightTrigger: BYTE,
-  sThumbLX: int16_t,
-  sThumbLY: int16_t,
-  sThumbRX: int16_t,
-  sThumbRY: int16_t[2],
-});
-const cStruct = CStruct.from(XINPUT_GAMEPAD);
-
-// console.log(cStruct) =>
-typedef struct _XINPUT_GAMEPAD
-{
-    WORD wButtons;
-    BYTE bLeftTrigger;
-    BYTE bRightTrigger;
-    int16_t sThumbLX;
-    int16_t sThumbLY;
-    int16_t sThumbRX;
-    int16_t sThumbRY[2];
-} XINPUT_GAMEPAD, *XINPUT_GAMEPAD;
-```
-
 ## "string_t" Truncate when encountering 0
 
 ```ts
@@ -278,11 +203,11 @@ string_t[4].decode(new Uint8Array([0x61, 0x62, 0x00, 0x64]); // ab
 ## bits
 
 ```ts
-import { DWORD, bits, StructBuffer } from "@nmann/struct-buffer";
+import { uint32_t, bits, StructBuffer } from "@nmann/struct-buffer";
 
 const EFLAG_DATA = 0x00000246;
 const littleEndian = true;
-const EFLAG = bits(DWORD, {
+const EFLAG = bits(uint32_t, {
   CF: 0,
   PF: 2,
   AF: 4,

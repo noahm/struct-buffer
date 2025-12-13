@@ -1,5 +1,22 @@
 # Changelog
 
+## 6.0.0
+
+A new major version! This is based on published changes from the original upstream project which included a lot of refactoring and cleanup work.
+
+### BREAKING CHANGES
+
+- 📦 Package is now published as ESM only. UMD build has been removed.
+- 💥 remove `sizeof`, `display`, `c-struct`, `windows type`
+- 🔨 remove `StructBuffer.structName` attribute
+- 🔨 remove `StructType.names` attribute
+
+### Other changes
+
+- ✨ add `LittleEndian` and `RelativeOffset`. See unit tests for example usage
+- ✅ ✔️ add test
+- 🎨 improve code
+
 ## 5.4.1 2024-04-10
 
 - Fixed decoded types when using sequences of nested structs
