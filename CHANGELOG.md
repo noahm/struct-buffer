@@ -1,6 +1,6 @@
 # Changelog
 
-## 6.0.0
+## 6.0.0 2025-12-13
 
 A new major version! This is based on published changes from the original upstream project which included a lot of refactoring and cleanup work.
 
