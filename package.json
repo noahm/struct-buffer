@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
-    "ava": "^6.1.2",
+    "ava": "^7.0.0",
     "tsimp": "^2.0.11",
     "typescript": "^5.4.3"
   },
