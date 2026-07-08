@@ -1,17 +1,19 @@
 ## @nmann/struct-buffer
 
-[![npm](https://img.shields.io/npm/v/@nmann/struct-buffer)](https://www.npmjs.com/package/@nmann/struct-buffer)
+[![npm](https://img.shields.io/npm/v/@nmann/struct-buffer)](https://www.npmjs.com/package/@nmann/struct-buffer) ![Types Included Badge](https://img.shields.io/badge/types-included-blue)
+
+C-style structs for TypeScript. (useful for projects working with low-level data like WebHID, WebUSB, etc)
 
 A fork of the [struct-buffer](https://www.npmjs.com/package/struct-buffer) package, initially created to improve the typescript integration.
 
-Add structure to ArrayBuffer
-
 ## Why this package?
 
-[`restructure`](https://github.com/foliojs/restructure) is the main mature alternative in this space. This package has two specific advantages:
+Unlike alternatives in the space, this package treats Typescript as a first-class priority. All encode/decode inputs and outputs infer types directly from the struct definition.
 
-- Struct shapes are fully typed, automatically — `.decode()`/`.encode()` types are inferred from the struct definition, no hand-written interfaces.
-- Composable decorators like [`Reshape`](#reshape) and `LittleEndian` wrap an *existing* struct rather than requiring a subclass.
+Beyond that there are several additional niceties:
+
+- Composable decorators like [`Reshape`](#reshape) wrap and nest within existing struct definitions without requiring custom subclass implementations.
+- Python-like [`pack` and `unpack`](#pack-and-unpack) utilities
 
 ## Install
 
