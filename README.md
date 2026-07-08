@@ -6,6 +6,13 @@ A fork of the [struct-buffer](https://www.npmjs.com/package/struct-buffer) packa
 
 Add structure to ArrayBuffer
 
+## Why this package?
+
+[`restructure`](https://github.com/foliojs/restructure) is the main mature alternative in this space. This package has two specific advantages:
+
+- Struct shapes are fully typed, automatically — `.decode()`/`.encode()` types are inferred from the struct definition, no hand-written interfaces.
+- Composable decorators like [`Reshape`](#reshape) and `LittleEndian` wrap an *existing* struct rather than requiring a subclass.
+
 ## Install
 
 ```
