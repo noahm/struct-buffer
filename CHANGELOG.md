@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- ✨ add `Reshape` decorator for transforming decoded/encoded shape without changing binary layout. See `Reshape.test.ts` and README for example usage
+
 ## 6.0.1 2025-12-13
 
 A new major version! This is based on published changes from the original upstream project which included a lot of refactoring and cleanup work. (note there is no 6.0.0 due to a mistake in publishing)
