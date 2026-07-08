@@ -295,6 +295,63 @@ const c_str = new Inject(
 
 See `Inject.test.ts` file.
 
+## Reshape
+
+Transform the decoded/encoded shape of a struct (or any buffer-like) without touching its binary layout. Give it a `decode` function to map the raw decoded value to whatever shape you want, and an `encode` function to map it back.
+
+```ts
+import { StructBuffer, Reshape, uint8_t } from "@nmann/struct-buffer";
+
+const raw = new StructBuffer({
+  x_lo: uint8_t,
+  x_hi: uint8_t,
+});
+
+const reshaped = new Reshape(raw, {
+  decode: (data) => ({ x: data.x_lo | (data.x_hi << 8) }),
+  encode: (data: { x: number }) => ({
+    x_lo: data.x & 0xff,
+    x_hi: (data.x >> 8) & 0xff,
+  }),
+});
+
+// encode
+const view = reshaped.encode({ x: 0x0102 });
+// view => <02 01>
+
+// decode
+const obj = reshaped.decode(view);
+// obj => { x: 0x0102 }
+```
+
+It can also be nested inside another struct as a field:
+
+```ts
+const inner = new StructBuffer({
+  lo: uint8_t,
+  hi: uint8_t,
+});
+
+const reshaped = new Reshape(inner, {
+  decode: (data) => data.lo | (data.hi << 8),
+  encode: (val: number) => ({
+    lo: val & 0xff,
+    hi: (val >> 8) & 0xff,
+  }),
+});
+
+const outer = new StructBuffer({
+  id: uint8_t,
+  value: reshaped,
+});
+
+// encode
+outer.encode({ id: 42, value: 0x0304 });
+// => <2a 04 03>
+```
+
+See `Reshape.test.ts` file.
+
 ## [pack and unpack](https://docs.python.org/3/library/struct.html)
 
 ```ts
