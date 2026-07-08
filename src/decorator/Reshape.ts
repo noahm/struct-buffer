@@ -33,6 +33,6 @@ export class Reshape<SrcD, SrcE, D, E> extends BufferLikeDecorator<D, E> {
 
   override encode(obj: E, options?: IEncodeOptions): DataView {
     const raw = this.transforms.encode(obj);
-    return this.src.encode(raw, options) as DataView;
+    return this.src.encode(raw as unknown as E, options) as DataView;
   }
 }
