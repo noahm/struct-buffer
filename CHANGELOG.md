@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.1.1 Unreleased
+
+- 🐛 fix `Reshape` when indexed as an array (e.g. `reshaped[n]`). The transform is now applied per reshaped unit with the array nesting restored around the results, and `byteLength` correctly scales with the array length. Previously the array dimension was folded into the source type and the transform ran once over the whole nested structure, producing malformed output.
+
 ## 6.1.0 2026-07-08
 
 - ✨ add `Reshape` decorator for transforming decoded/encoded shape without changing binary layout. See `Reshape.test.ts` and README for example usage

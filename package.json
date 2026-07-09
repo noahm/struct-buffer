@@ -1,6 +1,6 @@
 {
   "name": "@nmann/struct-buffer",
-  "version": "6.1.0",
+  "version": "6.1.1",
   "description": "C-style structs for TypeScript",
   "type": "module",
   "main": "./dist/index.js",

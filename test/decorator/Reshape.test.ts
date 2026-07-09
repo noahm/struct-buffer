@@ -75,6 +75,51 @@ test("reshape used inside another struct", (t) => {
   t.is(obj.value, 0x0304);
 });
 
+test("reshape array - indexed reshape applies transform per unit", (t) => {
+  const raw = new StructBuffer({
+    lo: uint8_t,
+    hi: uint8_t,
+  });
+
+  const reshaped = new Reshape(raw, {
+    decode: (data) => data.lo | (data.hi << 8),
+    encode: (val: number) => ({ lo: val & 0xff, hi: (val >> 8) & 0xff }),
+  });
+
+  // one byteLength
+  t.is(reshaped.byteLength, 2);
+  t.is(reshaped[3].byteLength, 6);
+
+  const view = reshaped[3].encode([0x0102, 0x0304, 0x0506]);
+  t.is(sview(view), "02 01 04 03 06 05");
+
+  const decoded = reshaped[3].decode(view);
+  t.deepEqual(decoded, [0x0102, 0x0304, 0x0506]);
+});
+
+test("reshape array - two dimensions nest around each unit", (t) => {
+  const raw = new StructBuffer({
+    lo: uint8_t,
+    hi: uint8_t,
+  });
+
+  const reshaped = new Reshape(raw, {
+    decode: (data) => data.lo | (data.hi << 8),
+    encode: (val: number) => ({ lo: val & 0xff, hi: (val >> 8) & 0xff }),
+  });
+
+  // uh oh, reshaped[n][n] is any type!!!
+  t.is(reshaped[2][2].byteLength, 8);
+
+  const grid = [
+    [0x0102, 0x0304],
+    [0x0506, 0x0708],
+  ];
+  const view = reshaped[2][2].encode(grid);
+  t.is(sview(view), "02 01 04 03 06 05 08 07");
+  t.deepEqual(reshaped[2][2].decode(view), grid);
+});
+
 test("reshape roundtrip preserves data", (t) => {
   const raw = new StructBuffer({
     r: uint8_t,
