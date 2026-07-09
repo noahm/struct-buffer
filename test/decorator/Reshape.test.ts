@@ -6,6 +6,7 @@ import {
   sview,
   Reshape,
 } from "../../src/index.js";
+import type { Equal, Expect, NotAny } from "../_type-utils.js";
 
 test("reshape struct - combine low and high bytes", (t) => {
   const raw = new StructBuffer({
@@ -86,6 +87,11 @@ test("reshape array - indexed reshape applies transform per unit", (t) => {
     encode: (val: number) => ({ lo: val & 0xff, hi: (val >> 8) & 0xff }),
   });
 
+  // decode/encode types follow the array nesting the indexing adds
+  type _decode0 = Expect<Equal<ReturnType<typeof reshaped.decode>, number>>;
+  type _decode1 = Expect<Equal<ReturnType<(typeof reshaped)[3]["decode"]>, number[]>>;
+  type _encode1 = Expect<Equal<Parameters<(typeof reshaped)[3]["encode"]>[0], number[]>>;
+
   // one byteLength
   t.is(reshaped.byteLength, 2);
   t.is(reshaped[3].byteLength, 6);
@@ -108,7 +114,15 @@ test("reshape array - two dimensions nest around each unit", (t) => {
     encode: (val: number) => ({ lo: val & 0xff, hi: (val >> 8) & 0xff }),
   });
 
-  // uh oh, reshaped[n][n] is any type!!!
+  // indexing two levels deep must keep concrete types, not fall back to any
+  type _notAny = Expect<NotAny<(typeof reshaped)[2][2]>>;
+  type _decode2 = Expect<
+    Equal<ReturnType<(typeof reshaped)[2][2]["decode"]>, number[][]>
+  >;
+  type _encode2 = Expect<
+    Equal<Parameters<(typeof reshaped)[2][2]["encode"]>[0], number[][]>
+  >;
+
   t.is(reshaped[2][2].byteLength, 8);
 
   const grid = [

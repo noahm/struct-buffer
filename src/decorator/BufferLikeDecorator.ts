@@ -2,12 +2,13 @@ import { TypeDeep } from "../base/type-deep.js";
 import {
   LikeBuffer_t,
   IBufferLike,
+  INestedBufferLike,
   IDecodeOptions,
   IEncodeOptions,
 } from "../interfaces.js";
 
 export default class BufferLikeDecorator<D, E>
-  extends TypeDeep<IBufferLike<D[], E[]>>
+  extends TypeDeep<INestedBufferLike<D[], E[]>>
   implements IBufferLike<D, E>
 {
   constructor(protected readonly src: IBufferLike<D, E>) {

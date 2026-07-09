@@ -70,6 +70,24 @@ export interface IBufferLike<D, E>
     IDecode<D>,
     IEncode<E> {}
 
+/**
+ * An {@link IBufferLike} whose numeric indexing stays typed to arbitrary
+ * depth: each index adds one more level of array nesting to the decoded and
+ * encoded shapes, e.g. `t[2]` decodes to `D[]` and `t[2][3]` to `D[][]`.
+ *
+ * Concrete types like `StructBuffer`/`StructType` already recurse through
+ * their own class types, but decorators (which wrap an arbitrary
+ * `IBufferLike`) need this to avoid falling back to `any` past the first
+ * index.
+ */
+export interface INestedBufferLike<D, E>
+  extends IByteLength,
+    IDecode<D>,
+    IEncode<E> {
+  readonly length: number;
+  readonly [n: number]: INestedBufferLike<D[], E[]>;
+}
+
 export type StructBuffer_t = { [k: string]: IBufferLike<any, any> };
 
 export type NumberMap_t = { [k: string]: number };

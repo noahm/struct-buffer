@@ -3,6 +3,7 @@
 ## 6.1.1 Unreleased
 
 - 🐛 fix `Reshape` when indexed as an array (e.g. `reshaped[n]`). The transform is now applied per reshaped unit with the array nesting restored around the results, and `byteLength` correctly scales with the array length. Previously the array dimension was folded into the source type and the transform ran once over the whole nested structure, producing malformed output.
+- 🐛 fix decorator types (`Reshape`, `LittleEndian`, `RelativeOffset`) and runtime types falling back to `any` when indexed more than one level deep (e.g. `reshaped[n][m]`). Indexing now keeps the decoded/encoded types with the correct array nesting to arbitrary depth.
 
 ## 6.1.0 2026-07-08
 
